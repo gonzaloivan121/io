@@ -1,12 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Viewport } from "./viewport/viewport";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [Viewport],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  protected readonly title = signal('io');
-}
+export class App {}
