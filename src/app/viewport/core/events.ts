@@ -1,4 +1,4 @@
-import { Input, MouseButton, KeyCode } from "./input";
+import { Input, MouseButton, KeyCode } from "./input/input";
 import { Renderer } from "./renderer";
 
 /**

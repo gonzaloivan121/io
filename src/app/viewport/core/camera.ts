@@ -1,6 +1,6 @@
 import { Vector2 } from "@xloxlolex/vector-math";
 
-import { GamepadAxis, Input } from "./input";
+import { GamepadAxis, Input } from "./input/input";
 import { Entity } from "./entity";
 import { Renderer } from "./renderer";
 import { Time } from "./time";

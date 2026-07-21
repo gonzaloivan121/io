@@ -1,5 +1,5 @@
 import { Vector2 } from '@xloxlolex/vector-math';
-import { Input, MouseButton } from './input';
+import { Input, MouseButton } from './input/input';
 import { Renderer } from './renderer';
 
 interface UITheme {

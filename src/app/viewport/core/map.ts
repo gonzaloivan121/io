@@ -2,7 +2,7 @@ import { Vector2 } from '@xloxlolex/vector-math';
 
 import { Entity } from './entity';
 import { Color } from './color';
-import { Input, KeyCode } from './input';
+import { Input, KeyCode } from './input/input';
 import { Renderer } from './renderer';
 
 export class Map extends Entity {

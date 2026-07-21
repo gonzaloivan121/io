@@ -4,7 +4,7 @@ import { Engine } from './engine';
 import { Player } from './player';
 import { Map } from './map';
 import { Point } from './point';
-import { Input, KeyCode, GamepadButton } from './input';
+import { Input, KeyCode, GamepadButton } from './input/input';
 import { Color } from './color';
 import { Camera } from './camera';
 import { Time } from './time';
