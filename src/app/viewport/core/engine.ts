@@ -3,7 +3,8 @@ import { Time } from './time';
 import { Color } from './color';
 import { Renderer } from './renderer';
 import { InvalidArgumentError, NotFoundError } from '../../errors';
-import { Input } from './input';
+import { Input } from './input/input';
+import { Log } from './log/log';
 
 /**
  * Represents the core engine of the application, responsible for managing the game loop, rendering, and timing.
@@ -29,12 +30,14 @@ export class Engine {
      *
      * @static
      * @param {HTMLCanvasElement} canvas - The HTML canvas element to be used for rendering the viewport.
-     * @throws {NotFoundError} If the canvas element is not found or the 2D context cannot be obtained.
+     * @throws {InvalidArgumentError} If the canvas element or the 2D context is not provided or is invalid.
      * @memberof Engine
      */
     public static Initialize(canvas: HTMLCanvasElement): void {
         if (!canvas) {
-            throw new NotFoundError('Canvas element not found');
+            throw new InvalidArgumentError(
+                'Canvas element must be provided for engine initialization.',
+            );
         }
 
         const context = canvas.getContext('2d', {
@@ -42,8 +45,12 @@ export class Engine {
         });
 
         if (!context) {
-            throw new NotFoundError('Could not obtain 2D canvas context');
+            throw new InvalidArgumentError(
+                'Failed to get 2D context from the provided canvas element.',
+            );
         }
+
+        Log.Initialize();
 
         Renderer.Initialize(context);
         Renderer.Resize();
@@ -53,10 +60,10 @@ export class Engine {
 
     /**
      * Runs the engine and starts the game loop.
-     * 
+     *
      * This method uses `requestAnimationFrame` to create a loop that calls the provided update function.
      * It calculates the delta time for each frame and updates the `Time` class accordingly.
-     * 
+     *
      * This is the main entry point for running the game logic and rendering.
      * It should be called after the engine has been initialized and the canvas is ready.
      *
@@ -92,11 +99,11 @@ export class Engine {
 
     /**
      * Calculates the delta time since the last frame.
-     * 
+     *
      * This method updates the `Time.DeltaTime` and `Time.Time` properties.
      * Delta time is the time difference between the current frame and the previous frame,
      * which can be used for smooth animations and game logic updates.
-     * 
+     *
      * It also updates the `Time.UnscaledDeltaTime` property, which represents the delta time without any time scaling applied.
      *
      * @private
@@ -113,7 +120,7 @@ export class Engine {
 
     /**
      * Draws the background of the viewport with a specified color.
-     * 
+     *
      * This method fills the entire viewport with the given color.
      * It is typically used to set a background color before drawing other elements.
      *
@@ -151,7 +158,7 @@ export class Engine {
 
     /**
      * Loads an audio file from a specified source URL.
-     * 
+     *
      * This method creates a new `HTMLAudioElement` and sets its source to the provided URL.
      *
      * @static
@@ -168,7 +175,7 @@ export class Engine {
 
     /**
      * Loads a video from a specified source URL.
-     * 
+     *
      * This method creates a new `HTMLVideoElement` and sets its source to the provided URL.
      *
      * @static

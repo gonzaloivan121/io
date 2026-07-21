@@ -116,8 +116,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Red.
-     * This color is represented as (1, 0, 0, 1)
+     * Predefined color: `Red`.
+     *
+     * This color is represented as `(1, 0, 0, 1)`
      *
      * @returns {Color} A new `Color` instance representing the red color.
      * @static
@@ -127,8 +128,23 @@ export class Color {
     }
 
     /**
-     * Predefined color: PersianRed.
-     * This color is represented as (0.8, 0.2, 0.2, 1)
+     * Predefined color: `Dark Red`.
+     *
+     * This color is represented as `(0.5, 0, 0, 1)`
+     *
+     * @readonly
+     * @static
+     * @type {Color}
+     * @memberof Color
+     */
+    public static get DarkRed(): Color {
+        return new Color(0.5, 0, 0, 1);
+    }
+
+    /**
+     * Predefined color: `Persian Red`.
+     *
+     * This color is represented as `(0.8, 0.2, 0.2, 1)`
      *
      * @returns {Color} A new `Color` instance representing the Persian red color.
      * @static
@@ -138,8 +154,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Transparent Persian Red.
-     * This color is represented as (0.8, 0.2, 0.2, 0)
+     * Predefined color: `Transparent Persian Red`.
+     *
+     * This color is represented as `(0.8, 0.2, 0.2, 0)`
      *
      * @returns {Color} A new `Color` instance representing the transparent Persian red color.
      * @static
@@ -149,8 +166,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Orange.
-     * This color is represented as (1, 0.5, 0, 1)
+     * Predefined color: `Orange`.
+     *
+     * This color is represented as `(1, 0.5, 0, 1)`
      *
      * @returns {Color} A new `Color` instance representing the orange color.
      * @static
@@ -160,8 +178,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Green.
-     * This color is represented as (0, 1, 0, 1)
+     * Predefined color: `Green`.
+     *
+     * This color is represented as `(0, 1, 0, 1)`
      *
      * @returns {Color} A new `Color` instance representing the green color.
      * @static
@@ -171,8 +190,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Apple Green.
-     * This color is represented as (0.2, 0.8, 0.2, 1)
+     * Predefined color: `Apple Green`.
+     *
+     * This color is represented as `(0.2, 0.8, 0.2, 1)`
      *
      * @returns {Color} A new `Color` instance representing the Apple Green color.
      * @static
@@ -182,8 +202,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Blue.
-     * This color is represented as (0, 0, 1, 1)
+     * Predefined color: `Blue`.
+     *
+     * This color is represented as `(0, 0, 1, 1)`
      *
      * @returns {Color} A new `Color` instance representing the blue color.
      * @static
@@ -193,8 +214,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Governor Bay Blue.
-     * This color is represented as (0.2, 0.2, 0.8, 1)
+     * Predefined color: `Governor Bay Blue`.
+     *
+     * This color is represented as `(0.2, 0.2, 0.8, 1)`
      *
      * @returns {Color} A new `Color` instance representing the Governor Bay Blue color.
      * @static
@@ -204,8 +226,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Purple.
-     * This color is represented as (0.5, 0, 0.5, 1)
+     * Predefined color: `Purple`.
+     *
+     * This color is represented as `(0.5, 0, 0.5, 1)`
      *
      * @returns {Color} A new `Color` instance representing the purple color.
      * @static
@@ -214,8 +237,9 @@ export class Color {
         return new Color(0.5, 0, 0.5, 1);
     }
     /**
-     * Predefined color: Yellow.
-     * This color is represented as (1, 1, 0, 1)
+     * Predefined color: `Yellow`.
+     *
+     * This color is represented as `(1, 1, 0, 1)`
      *
      * @returns {Color} A new `Color` instance representing the yellow color.
      * @static
@@ -225,8 +249,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Cyan.
-     * This color is represented as (0, 1, 1, 1)
+     * Predefined color: `Cyan`.
+     *
+     * This color is represented as `(0, 1, 1, 1)`
      *
      * @returns {Color} A new `Color` instance representing the cyan color.
      * @static
@@ -236,8 +261,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Magenta.
-     * This color is represented as (1, 0, 1, 1)
+     * Predefined color: `Magenta`.
+     *
+     * This color is represented as `(1, 0, 1, 1)`
      *
      * @returns {Color} A new `Color` instance representing the magenta color.
      * @static
@@ -247,8 +273,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Black.
-     * This color is represented as (0, 0, 0, 1)
+     * Predefined color: `Black`.
+     *
+     * This color is represented as `(0, 0, 0, 1)`
      *
      * @returns {Color} A new `Color` instance representing the black color.
      * @static
@@ -258,8 +285,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: White.
-     * This color is represented as (1, 1, 1, 1)
+     * Predefined color: `White`.
+     *
+     * This color is represented as `(1, 1, 1, 1)`
      *
      * @returns {Color} A new `Color` instance representing the white color.
      * @static
@@ -269,8 +297,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Transparent.
-     * This color is represented as (1, 1, 1, 0)
+     * Predefined color: `Transparent`.
+     *
+     * This color is represented as `(1, 1, 1, 0)`
      *
      * @returns {Color} A new `Color` instance representing the transparent color.
      * @static
@@ -280,8 +309,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Gray.
-     * This color is represented as (0.5, 0.5, 0.5, 1)
+     * Predefined color: `Gray`.
+     *
+     * This color is represented as `(0.5, 0.5, 0.5, 1)`
      *
      * @returns {Color} A new `Color` instance representing the gray color.
      * @static
@@ -291,8 +321,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Dark Gray.
-     * This color is represented as (0.2, 0.2, 0.2, 1)
+     * Predefined color: `Dark Gray`.
+     *
+     * This color is represented as `(0.2, 0.2, 0.2, 1)`
      *
      * @returns {Color} A new `Color` instance representing the dark gray color.
      * @static
@@ -302,8 +333,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Light Gray.
-     * This color is represented as (0.8, 0.8, 0.8, 1)
+     * Predefined color: `Light Gray`.
+     *
+     * This color is represented as `(0.8, 0.8, 0.8, 1)`
      *
      * @returns {Color} A new `Color` instance representing the light gray color.
      * @static
@@ -313,8 +345,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Gold.
-     * This color is represented as (1, 0.84, 0, 1)
+     * Predefined color: `Gold`.
+     *
+     * This color is represented as `(1, 0.84, 0, 1)`
      *
      * @returns {Color} A new `Color` instance representing the gold color.
      * @static
@@ -324,8 +357,9 @@ export class Color {
     }
 
     /**
-     * Predefined color: Silver.
-     * This color is represented as (0.75, 0.75, 0.75, 1)
+     * Predefined color: `Silver`.
+     *
+     * This color is represented as `(0.75, 0.75, 0.75, 1)`
      *
      * @returns {Color} A new `Color` instance representing the silver color.
      * @static
@@ -336,7 +370,7 @@ export class Color {
 
     /**
      * Predefined color: `Bronze`.
-     * 
+     *
      * This color is represented as `(0.8, 0.52, 0.25, 1)`
      *
      * @returns {Color} A new `Color` instance representing the bronze color.
@@ -348,7 +382,7 @@ export class Color {
 
     /**
      * Predefined color: `Pink`.
-     * 
+     *
      * This color is represented as `(1, 0.75, 0.8, 1)`
      *
      * @returns {Color} A new `Color` instance representing the pink color.
@@ -360,7 +394,7 @@ export class Color {
 
     /**
      * Predefined color: `Brown`.
-     * 
+     *
      * This color is represented as `(0.6, 0.4, 0.2, 1)`
      *
      * @returns {Color} A new `Color` instance representing the brown color.
@@ -371,8 +405,8 @@ export class Color {
     }
 
     /**
-     * Predefined color: `KalyTurquoise`.
-     * 
+     * Predefined color: `Kaly Turquoise`.
+     *
      * This color is represented as `(0.012, 0.988, 0.631, 1)`
      *
      * @readonly
@@ -382,6 +416,90 @@ export class Color {
      */
     public static get KalyTurquoise(): Color {
         return new Color(0.012, 0.988, 0.631, 1);
+    }
+
+    /**
+     * Predefined color: `Trace`.
+     * 
+     * This color is represented as `(0.6, 0.6, 0.6, 1)`
+     *
+     * @readonly
+     * @static
+     * @type {Color}
+     * @memberof Color
+     */
+    public static get Trace(): Color {
+        return new Color(0.6, 0.6, 0.6, 1);
+    }
+
+    /**
+     * Predefined color: `Debug`.
+     * 
+     * This color is represented as `(0.25, 0.75, 0.35, 1)`
+     *
+     * @readonly
+     * @static
+     * @type {Color}
+     * @memberof Color
+     */
+    public static get Debug(): Color {
+        return new Color(0.25, 0.75, 0.35, 1);
+    }
+
+    /**
+     * Predefined color: `Info`.
+     * 
+     * This color is represented as `(0.2, 0.6, 0.9, 1)`
+     *
+     * @readonly
+     * @static
+     * @type {Color}
+     * @memberof Color
+     */
+    public static get Info(): Color {
+        return new Color(0.2, 0.6, 0.9, 1);
+    }
+
+    /**
+     * Predefined color: `Warn`.
+     * 
+     * This color is represented as `(0.95, 0.65, 0.15, 1)`
+     *
+     * @readonly
+     * @static
+     * @type {Color}
+     * @memberof Color
+     */
+    public static get Warn(): Color {
+        return new Color(0.95, 0.65, 0.15, 1);
+    }
+
+    /**
+     * Predefined color: `Error`.
+     * 
+     * This color is represented as `(0.85, 0.25, 0.25, 1)`
+     *
+     * @readonly
+     * @static
+     * @type {Color}
+     * @memberof Color
+     */
+    public static get Error(): Color {
+        return new Color(0.85, 0.25, 0.25, 1);
+    }
+
+    /**
+     * Predefined color: `Fatal`.
+     * 
+     * This color is represented as `(0.65, 0.15, 0.15, 1)`
+     *
+     * @readonly
+     * @static
+     * @type {Color}
+     * @memberof Color
+     */
+    public static get Fatal(): Color {
+        return new Color(0.65, 0.15, 0.15, 1);
     }
 
     /**
@@ -441,10 +559,12 @@ export class Color {
     }
 
     /**
-     * Gets the string representation of the color in hexadecimal format.
-     * The format is #RRGGBBAA, where RR, GG, BB, and AA are the red, green, blue, and alpha components in hexadecimal.
+     * Returns the string representation of the color in hexadecimal format.
+     * The format is `#RRGGBBAA`, where RR, GG, BB, and AA are the red, green, blue, and alpha components in hexadecimal.
      *
-     * @returns {string} The string representation of the color in hexadecimal format.
+     * @readonly
+     * @type {string}
+     * @memberof Color
      */
     public get String(): string {
         const r = Math.round(this.R * 255);
@@ -457,6 +577,39 @@ export class Color {
         };
 
         return `#${toHex(r)}${toHex(g)}${toHex(b)}${toHex(a)}`;
+    }
+
+    /**
+     * Returns the string representation of the color in RGB format.
+     * The format is `rgb(R, G, B)`, where R, G, and B are the red, green, and blue components scaled to the range 0-255.
+     *
+     * @readonly
+     * @type {string}
+     * @memberof Color
+     */
+    public get RGBString(): string {
+        const r = Math.round(this.R * 255);
+        const g = Math.round(this.G * 255);
+        const b = Math.round(this.B * 255);
+
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    /**
+     * Returns the string representation of the color in RGBA format.
+     * The format is `rgba(R, G, B, A)`, where R, G, and B are the red, green, and blue components scaled to the range 0-255, and A is the alpha component in the range 0-1.
+     *
+     * @readonly
+     * @type {string}
+     * @memberof Color
+     */
+    public get RGBAString(): string {
+        const r = Math.round(this.R * 255);
+        const g = Math.round(this.G * 255);
+        const b = Math.round(this.B * 255);
+        const a = this.A;
+
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
     }
 
     /**
