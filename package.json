@@ -19,7 +19,6 @@
     "@angular/router": "^22.0.0",
     "@xloxlolex/vector-math": "^1.1.3",
     "rxjs": "~7.8.0",
-    "ts-keycode-enum": "^1.0.6",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
