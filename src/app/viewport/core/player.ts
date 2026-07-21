@@ -3,9 +3,18 @@ import { Vector2 } from "@xloxlolex/vector-math";
 import { Entity } from "./entity";
 import { Color } from "./color";
 import { Renderer } from "./renderer";
-import { GamepadAxis, Input, KeyCode, GamepadButton } from "./input";
+import { GamepadAxis, Input, KeyCode, GamepadButton } from "./input/input";
 import { Time } from "./time";
 
+/**
+ * Represents the player entity in the game, extending the base `Entity` class.
+ * 
+ * The `Player` class manages the player's position, rotation, scale, speed, color, and score.
+ *
+ * @export
+ * @class Player
+ * @extends {Entity}
+ */
 export class Player extends Entity {
     private baseScale: Vector2;
     private score: number = 0;
@@ -36,6 +45,8 @@ export class Player extends Entity {
         return this.score;
     }
 
+    public override Start(): void {}
+
     public override Update(): void {
         const input: Vector2 = new Vector2(
             Input.GetGamepadAxis(GamepadAxis.LeftStickX),
@@ -56,10 +67,11 @@ export class Player extends Entity {
 
         const moveSpeed: number = this.speed * 350;
         const delta: Vector2 = Vector2.Multiply(input.normalized, moveSpeed * Time.DeltaTime);
-
+        
         this.position = Vector2.Add(this.position, delta);
 
-        if (Input.GetGamepadButtonDown(GamepadButton.A)) {
+        // Test score increase when pressing the A button on the gamepad or the Space key on the keyboard.
+        if (Input.GetGamepadButton(GamepadButton.A) || Input.GetKey(KeyCode.Space)) {
             this.score += 100;
         }
 
@@ -72,16 +84,30 @@ export class Player extends Entity {
             this.position.y - this.scale.y / 2,
         );
 
-        const borderWidth: number = 5 + this.score * this.growth;
+        const borderWidth: number = 5 + (this.score * this.growth);
 
         Renderer.FillRect(position, this.scale, this.color.String);
         Renderer.StrokeRect(position, this.scale, this.color.Darker.String, borderWidth);
     }
 
+    /**
+     * Increases the player's score by the specified amount.
+     * The score cannot go below zero.
+     *
+     * @param {number} amount - The amount to increase the score by.
+     * @memberof Player
+     */
     public Score(amount: number): void {
         this.score = Math.max(0, this.score + amount);
     }
 
+    /**
+     * Decreases the player's score by the specified amount.
+     * The score cannot go below zero.
+     *
+     * @param {number} amount - The amount to decrease the score by.
+     * @memberof Player
+     */
     public LoseScore(amount: number): void {
         if (amount <= 0) {
             return;
@@ -90,12 +116,24 @@ export class Player extends Entity {
         this.score = Math.max(0, this.score - amount);
     }
 
+    /**
+     * Resets the player's position, scale, and score to their initial values.
+     *
+     * @param {Vector2} [position=Renderer.ViewportCenter] - The position to reset the player to.
+     * @memberof Player
+     */
     public Reset(position: Vector2 = Renderer.ViewportCenter): void {
         this.position = position;
         this.scale = new Vector2(this.baseScale.x, this.baseScale.y);
         this.score = 0;
     }
 
+    /**
+     * Updates the player's scale based on the current score and growth factor.
+     *
+     * @private
+     * @memberof Player
+     */
     private UpdateScale(): void {
         this.scale = Vector2.Multiply(this.baseScale, 1 + (this.score * this.growth));
     }

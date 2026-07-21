@@ -1,7 +1,7 @@
 import { Vector2 } from "@xloxlolex/vector-math";
 import { Time } from "./time";
 import { Color } from "./color";
-import { Input } from "./input";
+import { Input } from "./input/input";
 import { IBoundingBox } from "./bounding-box";
 import { Transform } from "./transform";
 
@@ -127,6 +127,8 @@ export abstract class Entity {
         this.scale = scale;
         this.speed = speed;
         this.color = color;
+
+        this.Start();
     }
 
     /**
@@ -207,6 +209,17 @@ export abstract class Entity {
      * @memberof Entity
      */
     protected abstract Draw(): void;
+
+    /**
+     * Initializes the `Entity` when it is first created.
+     *
+     * This method is abstract and should be implemented by subclasses to define specific initialization behavior.
+     *
+     * @protected
+     * @abstract
+     * @memberof Entity
+     */
+    protected Start(): void {}
 
     /**
      * Updates the state of the `Entity`.
