@@ -3,15 +3,24 @@ import { Renderer } from "./renderer";
 
 /**
  * Handles viewport events such as resizing, mouse movements, and keyboard inputs.
+ * 
  * This class provides static methods to handle various events and update the input system accordingly.
+ * 
  * It listens for events like window resize, mouse movement, key presses, and mouse button actions,
  * and updates the `Renderer` and `Input` classes accordingly.
+ * 
+ * @export
+ * @class Events
  */
 export class Events {
     /**
      * Handles the window resize event.
+     *
      * This method is called when the window is resized and updates the `Renderer`'s viewport size.
+     *
+     * @static
      * @param {Event} event - The resize event triggered by the window.
+     * @memberof Events
      */
     public static OnResize(event: Event): void {
         Renderer.Resize();
@@ -19,8 +28,12 @@ export class Events {
 
     /**
      * Handles the mouse move event.
+     *
      * This method is called when the mouse is moved and updates the `Input`'s mouse position.
+     *
+     * @static
      * @param {MouseEvent} event - The mouse move event containing the new mouse position.
+     * @memberof Events
      */
     public static OnMouseMove(event: MouseEvent): void {
         Input.SetMousePosition(event.clientX, event.clientY);
@@ -28,8 +41,12 @@ export class Events {
 
     /**
      * Handles the key down event.
+     *
      * This method is called when a key is pressed and updates the `Input`'s key code state.
+     *
+     * @static
      * @param {KeyboardEvent} event - The key down event containing the pressed key code.
+     * @memberof Events
      */
     public static OnKeyDown(event: KeyboardEvent): void {
         Input.SetKeyCode(event.keyCode as KeyCode);
@@ -37,8 +54,12 @@ export class Events {
 
     /**
      * Handles the key up event.
+     *
      * This method is called when a key is released and updates the `Input`'s key code state.
+     *
+     * @static
      * @param {KeyboardEvent} event - The key up event containing the released key code.
+     * @memberof Events
      */
     public static OnKeyUp(event: KeyboardEvent): void {
         Input.UnsetKeyCode(event.keyCode as KeyCode);
@@ -46,8 +67,12 @@ export class Events {
 
     /**
      * Handles the mouse down event.
+     *
      * This method is called when a mouse button is pressed and updates the `Input`'s mouse button state.
+     *
+     * @static
      * @param {MouseEvent} event - The mouse down event containing the pressed mouse button.
+     * @memberof Events
      */
     public static OnMouseDown(event: MouseEvent): void {
         Input.SetMouseButton(event.button as MouseButton);
@@ -55,8 +80,12 @@ export class Events {
 
     /**
      * Handles the mouse up event.
+     *
      * This method is called when a mouse button is released and updates the `Input`'s mouse button state.
+     *
+     * @static
      * @param {MouseEvent} event - The mouse up event containing the released mouse button.
+     * @memberof Events
      */
     public static OnMouseUp(event: MouseEvent): void {
         Input.UnsetMouseButton(event.button as MouseButton);
@@ -64,8 +93,12 @@ export class Events {
 
     /**
      * Handles the mouse scroll event.
+     *
      * This method is called when the mouse wheel is scrolled and updates the `Input`'s mouse scroll state.
+     *
+     * @static
      * @param {WheelEvent} event - The mouse scroll event containing the scroll delta.
+     * @memberof Events
      */
     public static OnMouseScroll(event: WheelEvent): void {
         const normalizedDelta: number = Math.sign(event.deltaY);
@@ -77,7 +110,7 @@ export class Events {
 
     /**
      * Handles the gamepad connected event.
-     * 
+     *
      * This method is called when a gamepad is connected and adds the gamepad to the `Input`'s gamepad list.
      *
      * @static
@@ -90,7 +123,7 @@ export class Events {
 
     /**
      * Handles the gamepad disconnected event.
-     * 
+     *
      * This method is called when a gamepad is disconnected and removes the gamepad from the `Input`'s gamepad list.
      *
      * @static

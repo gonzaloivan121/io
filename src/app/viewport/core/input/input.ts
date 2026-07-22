@@ -27,62 +27,124 @@ import { InvalidArgumentError } from "../../../errors";
 export class Input {
     /**
      * The current position of the mouse in the viewport.
-     * This is a static property that can be accessed globally.
-     * It is updated based on user input and can be used for various purposes,
-     * such as determining where to draw UI elements or where the player is pointing.
+     *
+     * This is a static property that tracks the mouse position as a `Vector2` object.
+     *
+     * @private
+     * @static
+     * @type {Vector2}
+     * @memberof Input
      */
     private static mousePosition: Vector2 = Vector2.zero;
 
     /**
      * The current scroll delta of the mouse wheel.
-     * This is a static property that can be accessed globally.
-     * It is updated based on user input and can be used for various purposes,
-     * such as zooming in and out of the game world or scrolling through menus.
+     *
+     * This value is reset to 0 after each frame.
+     *
+     * @private
+     * @static
+     * @type {number}
+     * @memberof Input
      */
     private static scrollDelta: number = 0;
 
     /**
      * The current state of key codes.
+     *
      * This is a static array that tracks whether each key is currently pressed.
-     * It uses the KeyCode enum to index into the array,
+     * It uses the `KeyCode` enum to index into the array,
      * allowing for efficient checking of key states.
+     *
+     * @private
+     * @static
+     * @type {boolean[]}
+     * @memberof Input
      */
     private static currentKeyCodes: boolean[] = [];
 
     /**
      * The previous state of key codes.
+     *
      * This is a static array that tracks whether each key was pressed in the previous frame.
+     * It uses the `KeyCode` enum to index into the array,
+     * allowing for efficient checking of key states.
+     *
      * It is used to determine if a key was pressed or released between frames.
+     *
+     * @private
+     * @static
+     * @type {boolean[]}
+     * @memberof Input
      */
     private static previousKeyCodes: boolean[] = [];
 
     /**
      * The current state of mouse buttons.
+     *
      * This is a static array that tracks whether each mouse button is currently pressed.
-     * It uses the MouseButton enum to index into the array,
+     * It uses the `MouseButton` enum to index into the array,
      * allowing for efficient checking of mouse button states.
+     *
+     * @private
+     * @static
+     * @type {boolean[]}
+     * @memberof Input
      */
     private static currentMouseButtons: boolean[] = [];
 
     /**
      * The previous state of mouse buttons.
+     *
      * This is a static array that tracks whether each mouse button was pressed in the previous frame.
+     * It uses the `MouseButton` enum to index into the array,
+     * allowing for efficient checking of mouse button states.
+     *
      * It is used to determine if a mouse button was clicked or released between frames.
+     *
+     * @private
+     * @static
+     * @type {boolean[]}
+     * @memberof Input
      */
     private static previousMouseButtons: boolean[] = [];
 
     /**
      * Current gamepad button states by gamepad index.
+     *
+     * This is a static object that tracks the current state of gamepad buttons for each connected gamepad.
+     * It is used to determine if a gamepad button was pressed or released between frames.
+     *
+     * @private
+     * @static
+     * @type {{ [gamepadIndex: number]: boolean[] }}
+     * @memberof Input
      */
     private static currentGamepadButtons: { [gamepadIndex: number]: boolean[] } = {};
 
     /**
      * Previous frame gamepad button states by gamepad index.
+     *
+     * This is a static object that tracks the previous state of gamepad buttons for each connected gamepad.
+     * It is used to determine if a gamepad button was pressed or released between frames.
+     *
+     * @private
+     * @static
+     * @type {{ [gamepadIndex: number]: boolean[] }}
+     * @memberof Input
      */
     private static previousGamepadButtons: { [gamepadIndex: number]: boolean[] } = {};
 
     /**
      * Current gamepad axis states by gamepad index.
+     *
+     * This is a static object that tracks the current state of gamepad axes for each connected gamepad.
+     * It is used to determine the current state of gamepad axes for each connected gamepad.
+     *
+     * @private
+     * @static
+     * @type {{ [gamepadIndex: number]: number[] }}
+     * @memberof Input
      */
     private static currentGamepadAxes: { [gamepadIndex: number]: number[] } = {};
 
@@ -136,10 +198,15 @@ export class Input {
 
     /**
      * Updates the input state for the current frame.
+     *
      * This method should be called each frame to ensure that the input system
      * is up-to-date with the latest user interactions.
-     * It copies the current key codes and mouse buttons to their previous states,
-     * allowing for detection of key presses and releases.
+     *
+     * It copies the current key codes, mouse buttons, gamepad buttons and gamepad axes
+     * to their previous states, allowing for detection of key presses and releases.
+     *
+     * @static
+     * @memberof Input
      */
     public static Update(): void {
         this.previousKeyCodes = [...this.currentKeyCodes];
@@ -201,10 +268,14 @@ export class Input {
 
     /**
      * Sets the mouse position to the specified coordinates.
+     *
      * This method updates the static MousePosition property,
      * which can be accessed globally to determine where the mouse is currently located.
+     *
+     * @static
      * @param {number} x - The x-coordinate of the mouse position.
      * @param {number} y - The y-coordinate of the mouse position.
+     * @memberof Input
      */
     public static SetMousePosition(x: number, y: number): void {
         this.mousePosition.x = x;
@@ -213,8 +284,12 @@ export class Input {
 
     /**
      * Sets the state of a key code to pressed.
-     * This method updates the currentKeyCodes array to indicate that the specified key is currently pressed
+     *
+     * This method updates the currentKeyCodes array to indicate that the specified key is currently pressed.
+     *
+     * @static
      * @param {KeyCode} keyCode - The key code to set as pressed.
+     * @memberof Input
      */
     public static SetKeyCode(keyCode: KeyCode): void {
         this.currentKeyCodes[keyCode] = true;
@@ -222,8 +297,12 @@ export class Input {
 
     /**
      * Unsets the state of a key code to not pressed.
+     *
      * This method updates the currentKeyCodes array to indicate that the specified key is no longer pressed.
+     *
+     * @static
      * @param {KeyCode} keyCode - The key code to unset.
+     * @memberof Input
      */
     public static UnsetKeyCode(keyCode: KeyCode): void {
         this.currentKeyCodes[keyCode] = false;
@@ -231,8 +310,12 @@ export class Input {
 
     /**
      * Sets the state of a mouse button to pressed.
+     * 
      * This method updates the currentMouseButtons array to indicate that the specified mouse button is currently pressed.
+     * 
+     * @static
      * @param {MouseButton} mouseButton - The mouse button to set as pressed.
+     * @memberof Input
      */
     public static SetMouseButton(mouseButton: MouseButton): void {
         this.currentMouseButtons[mouseButton] = true;
@@ -240,8 +323,12 @@ export class Input {
 
     /**
      * Unsets the state of a mouse button to not pressed.
+     * 
      * This method updates the currentMouseButtons array to indicate that the specified mouse button is no longer pressed.
+     * 
+     * @static
      * @param {MouseButton} mouseButton - The mouse button to unset.
+     * @memberof Input
      */
     public static UnsetMouseButton(mouseButton: MouseButton): void {
         this.currentMouseButtons[mouseButton] = false;
@@ -267,8 +354,10 @@ export class Input {
      * This method compares the current state of the key with its previous state
      * to determine if it was pressed this frame.
      *
+     * @static
      * @param {KeyCode} keyCode - The key code to check.
      * @returns {boolean} `true` if the key was pressed this frame, `false` otherwise.
+     * @memberof Input
      */
     public static GetKeyDown(keyCode: KeyCode): boolean {
         return this.currentKeyCodes[keyCode] && !this.previousKeyCodes[keyCode];
@@ -280,8 +369,10 @@ export class Input {
      * This method compares the current state of the key with its previous state
      * to determine if it was released this frame.
      *
+     * @static
      * @param {KeyCode} keyCode - The key code to check.
      * @returns {boolean} `true` if the key was released this frame, `false` otherwise.
+     * @memberof Input
      */
     public static GetKeyUp(keyCode: KeyCode): boolean {
         return !this.currentKeyCodes[keyCode] && this.previousKeyCodes[keyCode];
@@ -292,8 +383,10 @@ export class Input {
      *
      * This method checks the current state of the key to determine if it is pressed.
      *
+     * @static
      * @param {KeyCode} keyCode - The key code to check.
      * @returns {boolean} `true` if the key is currently pressed, `false` otherwise.
+     * @memberof Input
      */
     public static GetKey(keyCode: KeyCode): boolean {
         return this.currentKeyCodes[keyCode];
@@ -305,8 +398,10 @@ export class Input {
      * This method compares the current state of the mouse button with its previous state
      * to determine if it was pressed this frame.
      *
+     * @static
      * @param {MouseButton} mouseButton - The mouse button to check.
      * @returns {boolean} `true` if the mouse button was pressed this frame, `false` otherwise.
+     * @memberof Input
      */
     public static GetMouseButtonDown(mouseButton: MouseButton): boolean {
         return this.currentMouseButtons[mouseButton] && !this.previousMouseButtons[mouseButton];
@@ -318,8 +413,10 @@ export class Input {
      * This method compares the current state of the mouse button with its previous state
      * to determine if it was released this frame.
      *
+     * @static
      * @param {MouseButton} mouseButton - The mouse button to check.
      * @returns {boolean} `true` if the mouse button was released this frame, `false` otherwise.
+     * @memberof Input
      */
     public static GetMouseButtonUp(mouseButton: MouseButton): boolean {
         return !this.currentMouseButtons[mouseButton] && this.previousMouseButtons[mouseButton];
@@ -330,8 +427,10 @@ export class Input {
      *
      * This method checks the current state of the mouse button to determine if it is pressed.
      *
+     * @static
      * @param {MouseButton} mouseButton - The mouse button to check.
      * @returns {boolean} `true` if the mouse button is currently pressed, `false` otherwise.
+     * @memberof Input
      */
     public static GetMouseButton(mouseButton: MouseButton): boolean {
         return this.currentMouseButtons[mouseButton];
@@ -340,9 +439,11 @@ export class Input {
     /**
      * Checks whether a gamepad button was pressed this frame.
      *
+     * @static
      * @param {GamepadButton} button - The button index to query.
      * @param {number} gamepadIndex - The connected gamepad index. Defaults to `0`.
-     * @returns {boolean} `true` if the button was pressed this frame.
+     * @returns {boolean} `true` if the button was pressed this frame, `false` otherwise.
+     * @memberof Input
      */
     public static GetGamepadButtonDown(button: GamepadButton, gamepadIndex: number = 0): boolean {
         return (
@@ -354,9 +455,11 @@ export class Input {
     /**
      * Checks whether a gamepad button was released this frame.
      *
+     * @static
      * @param {GamepadButton} button - The button index to query.
      * @param {number} gamepadIndex - The connected gamepad index. Defaults to `0`.
-     * @returns {boolean} `true` if the button was released this frame.
+     * @returns {boolean} `true` if the button was released this frame, `false` otherwise.
+     * @memberof Input
      */
     public static GetGamepadButtonUp(button: GamepadButton, gamepadIndex: number = 0): boolean {
         return (
@@ -368,9 +471,11 @@ export class Input {
     /**
      * Checks whether a gamepad button is currently held.
      *
+     * @static
      * @param {GamepadButton} button - The button index to query.
      * @param {number} gamepadIndex - The connected gamepad index. Defaults to `0`.
-     * @returns {boolean} `true` if the button is currently pressed.
+     * @returns {boolean} `true` if the button is currently pressed, `false` otherwise.
+     * @memberof Input
      */
     public static GetGamepadButton(button: GamepadButton, gamepadIndex: number = 0): boolean {
         return this.GetCurrentGamepadButtonState(gamepadIndex, button);
@@ -379,10 +484,12 @@ export class Input {
     /**
      * Gets the current value of a gamepad axis.
      *
+     * @static
      * @param {GamepadAxis} axis - The axis to query.
      * @param {number} gamepadIndex - The connected gamepad index. Defaults to `0`.
      * @param {number} deadZone - Dead zone used for stick axes. Defaults to `0.1`.
      * @returns {number} Axis value in range `[-1, 1]` for sticks and `[0, 1]` for triggers.
+     * @memberof Input
      */
     public static GetGamepadAxis(
         axis: GamepadAxis,
@@ -401,8 +508,10 @@ export class Input {
     /**
      * Checks whether a gamepad with the given index is currently connected.
      *
+     * @static
      * @param {number} gamepadIndex - The gamepad index to check.
      * @returns {boolean} `true` if the gamepad is connected.
+     * @memberof Input
      */
     public static IsGamepadConnected(gamepadIndex: number = 0): boolean {
         return this.gamepads[gamepadIndex] !== undefined;
@@ -509,10 +618,7 @@ export class Input {
      * @returns {number} The current value of the specified axis, or `0` if the axis is not available.
      * @memberof Input
      */
-    private static GetCurrentGamepadAxisState(
-        gamepadIndex: number,
-        axis: GamepadAxis,
-    ): number {
+    private static GetCurrentGamepadAxisState(gamepadIndex: number, axis: GamepadAxis): number {
         return this.currentGamepadAxes[gamepadIndex]?.[axis] ?? 0;
     }
 }
