@@ -204,9 +204,9 @@ export class Renderer {
      * This is useful for temporarily changing drawing settings or transformations and then reverting back to the previous state.
      * It is important to ensure that `Restore()` is called after `Save()` to avoid errors due to an empty state stack.
      *
-     * @static
      * Nested saves are supported and should be matched with the same number of `Restore()` calls.
      *
+     * @static
      * @memberof Renderer
      */
     static Save(): void {
@@ -218,7 +218,9 @@ export class Renderer {
      * Restores the canvas context to the last saved state.
      *
      * If there is no saved state, this will throw an error. It is important to ensure that `Save()` has been called before calling `Restore()`.
+     *
      * This is useful for temporarily changing drawing settings or transformations and then reverting back to the previous state.
+     *
      * This should be used in conjunction with `Save()` to manage complex drawing states.
      *
      * @static
@@ -234,6 +236,19 @@ export class Renderer {
 
         this.GetContext().restore();
         this.contextSaveDepth--;
+    }
+
+    /**
+     * Resets the canvas context to its default state, clearing any transformations, styles, or settings that have been applied.
+     *
+     * This method is useful for ensuring a clean slate before starting new drawing operations, especially after multiple transformations or style changes.
+     *
+     * @static
+     * @memberof Renderer
+     */
+    static Reset(): void {
+        this.GetContext().reset();
+        this.contextSaveDepth = 0;
     }
 
     /**
@@ -322,11 +337,7 @@ export class Renderer {
      * @param {FillStyle} fillStyle - The fill style to use for the rectangle (e.g., a color string, gradient, or pattern).
      * @memberof Renderer
      */
-    static FillRect(
-        position: Vector2,
-        size: Vector2,
-        fillStyle: FillStyle,
-    ): void {
+    static FillRect(position: Vector2, size: Vector2, fillStyle: FillStyle): void {
         this.SetFillStyle(fillStyle);
         this.GetContext().fillRect(position.x, position.y, size.x, size.y);
     }
