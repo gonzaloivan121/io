@@ -8,26 +8,29 @@ import { Utilities } from "./utilities";
  */
 export class Color {
     /**
-     * The red component of the color, ranging from 0 to 1.
+     * The green component of the color, ranging from 0 to 1.
      *
-     * @type {number}
      * @private
+     * @type {number}
+     * @memberof Color
      */
     private r: number;
 
     /**
      * The green component of the color, ranging from 0 to 1.
      *
-     * @type {number}
      * @private
+     * @type {number}
+     * @memberof Color
      */
     private g: number;
 
     /**
      * The blue component of the color, ranging from 0 to 1.
      *
-     * @type {number}
      * @private
+     * @type {number}
+     * @memberof Color
      */
     private b: number;
 
@@ -35,18 +38,20 @@ export class Color {
      * The alpha component of the color, ranging from 0 to 1.
      * This represents the transparency of the color.
      *
-     * @type {number}
      * @private
+     * @type {number}
+     * @memberof Color
      */
     private a: number;
 
     /**
-     * Creates a new Color instance.
-     *
-     * @param {number} r - The red component (0 to 1).
-     * @param {number} g - The green component (0 to 1).
-     * @param {number} b - The blue component (0 to 1).
-     * @param {number} a - The alpha component (0 to 1, default is 1).
+     * Creates an instance of `Color`.
+     * 
+     * @param {number} [r=0] - The red component of the color, ranging from 0 to 1.
+     * @param {number} [g=0] - The green component of the color, ranging from 0 to 1.
+     * @param {number} [b=0] - The blue component of the color, ranging from 0 to 1.
+     * @param {number} [a=1] - The alpha component of the color, ranging from 0 to 1. Defaults to 1 (fully opaque).
+     * @memberof Color
      */
     constructor(r: number = 0, g: number = 0, b: number = 0, a: number = 1) {
         this.r = r;
@@ -58,7 +63,8 @@ export class Color {
     /**
      * Gets the red component of the color, clamped between 0 and 1.
      *
-     * @returns {number} The red component of the color.
+     * @readonly
+     * @type {number}
      * @memberof Color
      */
     public get R(): number {
@@ -68,7 +74,8 @@ export class Color {
     /**
      * Gets the green component of the color, clamped between 0 and 1.
      *
-     * @returns {number} The green component of the color.
+     * @readonly
+     * @type {number}
      * @memberof Color
      */
     public get G(): number {
@@ -78,7 +85,8 @@ export class Color {
     /**
      * Gets the blue component of the color, clamped between 0 and 1.
      *
-     * @returns {number} The blue component of the color.
+     * @readonly
+     * @type {number}
      * @memberof Color
      */
     public get B(): number {
@@ -88,7 +96,8 @@ export class Color {
     /**
      * Gets the alpha component of the color, clamped between 0 and 1.
      *
-     * @returns {number} The alpha component of the color.
+     * @readonly
+     * @type {number}
      * @memberof Color
      */
     public get A(): number {
@@ -99,10 +108,10 @@ export class Color {
      * Clamps the color component value between 0 and 1.
      * This ensures that the color components are always valid for rendering.
      *
-     * @param color - The color component value to clamp.
+     * @private
+     * @static
+     * @param {number} color - The color component value to clamp.
      * @returns {number} The clamped color component value.
-     * @private This method is used internally to ensure color validity.
-     * @static This method can be called without an instance of the `Color` class.
      * @memberof Color
      */
     private static GetColor(color: number): number {
@@ -117,11 +126,13 @@ export class Color {
 
     /**
      * Predefined color: `Red`.
+     * 
+     * This color is represented as `(1, 0, 0, 1)`.
      *
-     * This color is represented as `(1, 0, 0, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the red color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Red(): Color {
         return new Color(1, 0, 0, 1);
@@ -143,11 +154,13 @@ export class Color {
 
     /**
      * Predefined color: `Persian Red`.
+     * 
+     * This color is represented as `(0.8, 0.2, 0.2, 1)`.
      *
-     * This color is represented as `(0.8, 0.2, 0.2, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the Persian red color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get PersianRed(): Color {
         return new Color(0.8, 0.2, 0.2, 1);
@@ -155,11 +168,13 @@ export class Color {
 
     /**
      * Predefined color: `Transparent Persian Red`.
+     * 
+     * This color is represented as `(0.8, 0.2, 0.2, 0)`.
      *
-     * This color is represented as `(0.8, 0.2, 0.2, 0)`
-     *
-     * @returns {Color} A new `Color` instance representing the transparent Persian red color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get TransparentPersianRed(): Color {
         return new Color(0.8, 0.2, 0.2, 0);
@@ -167,11 +182,13 @@ export class Color {
 
     /**
      * Predefined color: `Orange`.
+     * 
+     * This color is represented as `(1, 0.5, 0, 1)`.
      *
-     * This color is represented as `(1, 0.5, 0, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the orange color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Orange(): Color {
         return new Color(1, 0.5, 0, 1);
@@ -179,11 +196,13 @@ export class Color {
 
     /**
      * Predefined color: `Green`.
+     * 
+     * This color is represented as `(0, 1, 0, 1)`.
      *
-     * This color is represented as `(0, 1, 0, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the green color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Green(): Color {
         return new Color(0, 1, 0, 1);
@@ -191,11 +210,13 @@ export class Color {
 
     /**
      * Predefined color: `Apple Green`.
+     * 
+     * This color is represented as `(0.2, 0.8, 0.2, 1)`.
      *
-     * This color is represented as `(0.2, 0.8, 0.2, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the Apple Green color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get AppleGreen(): Color {
         return new Color(0.2, 0.8, 0.2, 1);
@@ -203,11 +224,13 @@ export class Color {
 
     /**
      * Predefined color: `Blue`.
+     * 
+     * This color is represented as `(0, 0, 1, 1)`.
      *
-     * This color is represented as `(0, 0, 1, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the blue color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Blue(): Color {
         return new Color(0, 0, 1, 1);
@@ -215,11 +238,13 @@ export class Color {
 
     /**
      * Predefined color: `Governor Bay Blue`.
+     * 
+     * This color is represented as `(0.2, 0.2, 0.8, 1)`.
      *
-     * This color is represented as `(0.2, 0.2, 0.8, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the Governor Bay Blue color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get GovernorBayBlue(): Color {
         return new Color(0.2, 0.2, 0.8, 1);
@@ -227,22 +252,27 @@ export class Color {
 
     /**
      * Predefined color: `Purple`.
+     * 
+     * This color is represented as `(0.5, 0, 0.5, 1)`.
      *
-     * This color is represented as `(0.5, 0, 0.5, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the purple color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Purple(): Color {
         return new Color(0.5, 0, 0.5, 1);
     }
+
     /**
      * Predefined color: `Yellow`.
+     * 
+     * This color is represented as `(1, 1, 0, 1)`.
      *
-     * This color is represented as `(1, 1, 0, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the yellow color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Yellow(): Color {
         return new Color(1, 1, 0, 1);
@@ -250,11 +280,13 @@ export class Color {
 
     /**
      * Predefined color: `Cyan`.
+     * 
+     * This color is represented as `(0, 1, 1, 1)`.
      *
-     * This color is represented as `(0, 1, 1, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the cyan color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Cyan(): Color {
         return new Color(0, 1, 1, 1);
@@ -262,11 +294,13 @@ export class Color {
 
     /**
      * Predefined color: `Magenta`.
+     * 
+     * This color is represented as `(1, 0, 1, 1)`.
      *
-     * This color is represented as `(1, 0, 1, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the magenta color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Magenta(): Color {
         return new Color(1, 0, 1, 1);
@@ -274,11 +308,13 @@ export class Color {
 
     /**
      * Predefined color: `Black`.
+     * 
+     * This color is represented as `(0, 0, 0, 1)`.
      *
-     * This color is represented as `(0, 0, 0, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the black color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Black(): Color {
         return new Color(0, 0, 0, 1);
@@ -286,11 +322,13 @@ export class Color {
 
     /**
      * Predefined color: `White`.
-     *
-     * This color is represented as `(1, 1, 1, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the white color.
+     * 
+     * This color is represented as `(1, 1, 1, 1)`.
+     * 
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get White(): Color {
         return new Color(1, 1, 1, 1);
@@ -298,11 +336,13 @@ export class Color {
 
     /**
      * Predefined color: `Transparent`.
+     * 
+     * This color is represented as `(1, 1, 1, 0)`.
      *
-     * This color is represented as `(1, 1, 1, 0)`
-     *
-     * @returns {Color} A new `Color` instance representing the transparent color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Transparent(): Color {
         return new Color(1, 1, 1, 0);
@@ -310,11 +350,13 @@ export class Color {
 
     /**
      * Predefined color: `Gray`.
+     * 
+     * This color is represented as `(0.5, 0.5, 0.5, 1)`.
      *
-     * This color is represented as `(0.5, 0.5, 0.5, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the gray color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Gray(): Color {
         return new Color(0.5, 0.5, 0.5, 1);
@@ -322,11 +364,13 @@ export class Color {
 
     /**
      * Predefined color: `Dark Gray`.
+     * 
+     * This color is represented as `(0.2, 0.2, 0.2, 1)`.
      *
-     * This color is represented as `(0.2, 0.2, 0.2, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the dark gray color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get DarkGray(): Color {
         return new Color(0.2, 0.2, 0.2, 1);
@@ -334,11 +378,13 @@ export class Color {
 
     /**
      * Predefined color: `Light Gray`.
+     * 
+     * This color is represented as `(0.8, 0.8, 0.8, 1)`.
      *
-     * This color is represented as `(0.8, 0.8, 0.8, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the light gray color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get LightGray(): Color {
         return new Color(0.8, 0.8, 0.8, 1);
@@ -346,11 +392,13 @@ export class Color {
 
     /**
      * Predefined color: `Gold`.
+     * 
+     * This color is represented as `(1, 0.84, 0, 1)`.
      *
-     * This color is represented as `(1, 0.84, 0, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the gold color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Gold(): Color {
         return new Color(1, 0.84, 0, 1);
@@ -358,11 +406,13 @@ export class Color {
 
     /**
      * Predefined color: `Silver`.
+     * 
+     * This color is represented as `(0.75, 0.75, 0.75, 1)`.
      *
-     * This color is represented as `(0.75, 0.75, 0.75, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the silver color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Silver(): Color {
         return new Color(0.75, 0.75, 0.75, 1);
@@ -370,11 +420,13 @@ export class Color {
 
     /**
      * Predefined color: `Bronze`.
+     * 
+     * This color is represented as `(0.8, 0.52, 0.25, 1)`.
      *
-     * This color is represented as `(0.8, 0.52, 0.25, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the bronze color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Bronze(): Color {
         return new Color(0.8, 0.52, 0.25, 1);
@@ -382,11 +434,13 @@ export class Color {
 
     /**
      * Predefined color: `Pink`.
+     * 
+     * This color is represented as `(1, 0.75, 0.8, 1)`.
      *
-     * This color is represented as `(1, 0.75, 0.8, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the pink color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Pink(): Color {
         return new Color(1, 0.75, 0.8, 1);
@@ -394,11 +448,13 @@ export class Color {
 
     /**
      * Predefined color: `Brown`.
+     * 
+     * This color is represented as `(0.6, 0.4, 0.2, 1)`.
      *
-     * This color is represented as `(0.6, 0.4, 0.2, 1)`
-     *
-     * @returns {Color} A new `Color` instance representing the brown color.
+     * @readonly
      * @static
+     * @type {Color}
+     * @memberof Color
      */
     public static get Brown(): Color {
         return new Color(0.6, 0.4, 0.2, 1);
@@ -407,7 +463,7 @@ export class Color {
     /**
      * Predefined color: `Kaly Turquoise`.
      *
-     * This color is represented as `(0.012, 0.988, 0.631, 1)`
+     * This color is represented as `(0.012, 0.988, 0.631, 1)`.
      *
      * @readonly
      * @static
@@ -421,7 +477,7 @@ export class Color {
     /**
      * Predefined color: `Trace`.
      * 
-     * This color is represented as `(0.6, 0.6, 0.6, 1)`
+     * This color is represented as `(0.6, 0.6, 0.6, 1)`.
      *
      * @readonly
      * @static
@@ -435,7 +491,7 @@ export class Color {
     /**
      * Predefined color: `Debug`.
      * 
-     * This color is represented as `(0.25, 0.75, 0.35, 1)`
+     * This color is represented as `(0.25, 0.75, 0.35, 1)`.
      *
      * @readonly
      * @static
@@ -449,7 +505,7 @@ export class Color {
     /**
      * Predefined color: `Info`.
      * 
-     * This color is represented as `(0.2, 0.6, 0.9, 1)`
+     * This color is represented as `(0.2, 0.6, 0.9, 1)`.
      *
      * @readonly
      * @static
@@ -463,7 +519,7 @@ export class Color {
     /**
      * Predefined color: `Warn`.
      * 
-     * This color is represented as `(0.95, 0.65, 0.15, 1)`
+     * This color is represented as `(0.95, 0.65, 0.15, 1)`.
      *
      * @readonly
      * @static
@@ -477,7 +533,7 @@ export class Color {
     /**
      * Predefined color: `Error`.
      * 
-     * This color is represented as `(0.85, 0.25, 0.25, 1)`
+     * This color is represented as `(0.85, 0.25, 0.25, 1)`.
      *
      * @readonly
      * @static
@@ -491,7 +547,7 @@ export class Color {
     /**
      * Predefined color: `Fatal`.
      * 
-     * This color is represented as `(0.65, 0.15, 0.15, 1)`
+     * This color is represented as `(0.65, 0.15, 0.15, 1)`.
      *
      * @readonly
      * @static
@@ -537,17 +593,18 @@ export class Color {
     }
 
     /**
-     * Predefined color: Negative.
-     * This color is the negative of the current color, calculated as (1 - R, 1 - G, 1 - B, A).
+     * Returns the negative of the current color, calculated as (1 - R, 1 - G, 1 - B, A).
      *
-     * @returns {Color} A new `Color` instance representing the negative color.
+     * @readonly
+     * @type {Color}
+     * @memberof Color
      */
     public get Negative(): Color {
         return new Color(1 - this.R, 1 - this.G, 1 - this.B, this.A);
     }
 
     /**
-     * Gets a darker version of the current color by reducing the RGB components by half.
+     * Returns a darker version of the current color by reducing the RGB components by half.
      * The alpha component remains unchanged.
      *
      * @readonly
@@ -619,6 +676,7 @@ export class Color {
      * If t is greater than 1, returns the second color.
      * Otherwise, returns a new Color instance that is the result of the interpolation.
      *
+     * @static
      * @param {Color} a - The first `Color`.
      * @param {Color} b - The second `Color`.
      * @param {number} t - The interpolation parameter (0 to 1).

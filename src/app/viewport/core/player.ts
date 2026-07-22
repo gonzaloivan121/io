@@ -5,6 +5,7 @@ import { Color } from "./color";
 import { Renderer } from "./renderer";
 import { GamepadAxis, Input, KeyCode, GamepadButton } from "./input/input";
 import { Time } from "./time";
+import { Log } from "./log/log";
 
 /**
  * Represents the player entity in the game, extending the base `Entity` class.
@@ -45,7 +46,9 @@ export class Player extends Entity {
         return this.score;
     }
 
-    public override Start(): void {}
+    public override Start(): void {
+        Log.Debug("Player started");
+    }
 
     public override Update(): void {
         const input: Vector2 = new Vector2(

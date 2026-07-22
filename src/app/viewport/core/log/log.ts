@@ -64,12 +64,13 @@ export class Log {
      *
      * @static
      * @param {string} message - The message to log at the `TRACE` level.
+     * @param {...any[]} args - Additional arguments to log alongside the message.
      * @throws {InvalidArgumentError} If the message is not provided or is not a string.
      * @memberof Log
      */
-    public static Trace(message: string): void {
+    public static Trace(message: string, ...args: any[]): void {
         this.EnsureMessage(message);
-        this.Log(LogLevel.Trace, message);
+        this.Log(LogLevel.Trace, message, ...args);
     }
 
     /**
@@ -77,12 +78,13 @@ export class Log {
      *
      * @static
      * @param {string} message - The message to log at the `DEBUG` level.
+     * @param {...any[]} args - Additional arguments to log alongside the message.
      * @throws {InvalidArgumentError} If the message is not provided or is not a string.
      * @memberof Log
      */
-    public static Debug(message: string): void {
+    public static Debug(message: string, ...args: any[]): void {
         this.EnsureMessage(message);
-        this.Log(LogLevel.Debug, message);
+        this.Log(LogLevel.Debug, message, ...args);
     }
 
     /**
@@ -90,12 +92,13 @@ export class Log {
      *
      * @static
      * @param {string} message - The message to log at the `INFO` level.
+     * @param {...any[]} args - Additional arguments to log alongside the message.
      * @throws {InvalidArgumentError} If the message is not provided or is not a string.
      * @memberof Log
      */
-    public static Info(message: string): void {
+    public static Info(message: string, ...args: any[]): void {
         this.EnsureMessage(message);
-        this.Log(LogLevel.Info, message);
+        this.Log(LogLevel.Info, message, ...args);
     }
 
     /**
@@ -103,12 +106,13 @@ export class Log {
      *
      * @static
      * @param {string} message - The message to log at the `WARN` level.
+     * @param {...any[]} args - Additional arguments to log alongside the message.
      * @throws {InvalidArgumentError} If the message is not provided or is not a string.
      * @memberof Log
      */
-    public static Warn(message: string): void {
+    public static Warn(message: string, ...args: any[]): void {
         this.EnsureMessage(message);
-        this.Log(LogLevel.Warn, message);
+        this.Log(LogLevel.Warn, message, ...args);
     }
 
     /**
@@ -116,12 +120,13 @@ export class Log {
      *
      * @static
      * @param {string} message - The message to log at the `ERROR` level.
+     * @param {...any[]} args - Additional arguments to log alongside the message.
      * @throws {InvalidArgumentError} If the message is not provided or is not a string.
      * @memberof Log
      */
-    public static Error(message: string): void {
+    public static Error(message: string, ...args: any[]): void {
         this.EnsureMessage(message);
-        this.Log(LogLevel.Error, message);
+        this.Log(LogLevel.Error, message, ...args);
     }
 
     /**
@@ -129,12 +134,13 @@ export class Log {
      *
      * @static
      * @param {string} message - The message to log at the `FATAL` level.
+     * @param {...any[]} args - Additional arguments to log alongside the message.
      * @throws {InvalidArgumentError} If the message is not provided or is not a string.
      * @memberof Log
      */
-    public static Fatal(message: string): void {
+    public static Fatal(message: string, ...args: any[]): void {
         this.EnsureMessage(message);
-        this.Log(LogLevel.Fatal, message);
+        this.Log(LogLevel.Fatal, message, ...args);
     }
 
     /**
@@ -144,18 +150,26 @@ export class Log {
      * @static
      * @param {LogLevel} level - The log level at which to log the message.
      * @param {string} message - The message to log.
+     * @param {...any[]} args - Additional arguments to log alongside the message.
      * @throws {InvalidArgumentError} If the log level is not a valid LogLevel.
      * @throws {InvalidArgumentError} If the message is not provided or is not a string.
      * @memberof Log
      */
-    private static Log(level: LogLevel, message: string): void {
+    private static Log(level: LogLevel, message: string, ...args: any[]): void {
         this.EnsureLevel(level);
         this.EnsureMessage(message);
 
-        const timestamp: string = new Date().toISOString();
-        if (this.ShouldLog(level)) {
-            console.log(`%c[${timestamp}] [${level}]%c ${message}`, this.GetLevelStyles(level), '');
+        if (!this.ShouldLog(level)) {
+            return;
         }
+
+        const timestamp: string = new Date().toISOString();
+        console.log(
+            `%c[${timestamp}] [${level}]%c ${message}`,
+            this.GetLevelStyles(level),
+            '',
+            ...args,
+        );
     }
 
     /**
@@ -202,7 +216,10 @@ export class Log {
      */
     private static ShouldLog(level: LogLevel): boolean {
         this.EnsureLevel(level);
-        return Object.values(LogLevel).indexOf(level) >= Object.values(LogLevel).indexOf(this.currentLevel);
+        return (
+            Object.values(LogLevel).indexOf(level) >=
+            Object.values(LogLevel).indexOf(this.currentLevel)
+        );
     }
 
     /**
