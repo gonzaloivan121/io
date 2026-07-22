@@ -73,7 +73,11 @@ export class Enemy extends Entity {
 
     public override Update(): void {
         const destination = this.target?.position ?? this.position;
-        this.position = Vector2.Lerp(this.position, destination, this.speed * Time.DeltaTime);
+        const direction = Vector2.Subtract(destination, this.position);
+        const moveSpeed = this.speed * 350;
+        const delta = Vector2.Multiply(direction.normalized, moveSpeed * Time.DeltaTime);
+        
+        this.position = Vector2.Add(this.position, delta);
 
         this.UpdateScale();
     }

@@ -7,8 +7,8 @@ import { Renderer } from './renderer';
 
 export class Map extends Entity {
     public innerGridSize: number = 32;
-    public normalGridSize: number = this.innerGridSize * 4;
-    public outerGridSize: number = this.normalGridSize * 4;
+    public normalGridSize: number = this.innerGridSize * 3;
+    public outerGridSize: number = this.normalGridSize * 3;
 
     public drawGrid: boolean = true;
     public drawOuterGrid: boolean = true;
