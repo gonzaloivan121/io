@@ -7,18 +7,40 @@ import {
 } from '../../errors';
 
 /**
+ * Type defining the possible repetition options for patterns used in the `Renderer`.
+ * 
+ * @export
+ */
+export type Repetition = 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat' | null;
+
+/**
+ * Type defining the possible fill styles for drawing operations in the `Renderer`, which can be a color string, gradient, or pattern.
+ * 
+ * @export
+ */
+export type StrokeStyle = string | CanvasGradient | CanvasPattern;
+
+/**
+ * Type defining the possible fill styles for drawing operations in the `Renderer`, which can be a color string, gradient, or pattern.
+ * 
+ * @export
+ */
+export type FillStyle = string | CanvasGradient | CanvasPattern;
+
+/**
  * Interface defining the options for drawing text with the `Renderer`.
  *
+ * @export
  * @interface TextOptions
  */
-interface TextOptions {
+export interface TextOptions {
     /**
      * The fill style to use for the text, which can be a color string, gradient, or pattern.
      *
-     * @type {string}
+     * @type {FillStyle}
      * @memberof TextOptions
      */
-    fillStyle?: string;
+    fillStyle?: FillStyle;
 
     /**
      * The font to use for the text, which should be a valid CSS font string (e.g., '16px Arial').
@@ -44,21 +66,6 @@ interface TextOptions {
      */
     textBaseline?: CanvasTextBaseline;
 }
-
-/**
- * Type defining the possible repetition options for patterns used in the `Renderer`.
- */
-type Repetition = 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat' | null;
-
-/**
- * Type defining the possible fill styles for drawing operations in the `Renderer`, which can be a color string, gradient, or pattern.
- */
-type StrokeStyle = string | CanvasGradient | CanvasPattern;
-
-/**
- * Type defining the possible fill styles for drawing operations in the `Renderer`, which can be a color string, gradient, or pattern.
- */
-type FillStyle = string | CanvasGradient | CanvasPattern;
 
 /**
  * The `Renderer` class provides a centralized system for managing the canvas rendering context and drawing operations.

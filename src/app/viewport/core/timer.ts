@@ -1,7 +1,7 @@
 import { Vector2 } from '@xloxlolex/vector-math';
 import { Color } from './color';
 import { Renderer } from './renderer';
-import { UI } from './ui';
+import { UI } from './ui/ui';
 
 /**
  * Represents the specification for a Timer's appearance,

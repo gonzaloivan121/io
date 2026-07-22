@@ -12,7 +12,8 @@ import { Time } from './time';
 import { NotInitializedError } from '../../errors';
 import { Utilities } from './utilities';
 import { Renderer } from './renderer';
-import { UI } from './ui';
+import { UI } from './ui/ui';
+import { Log } from './log/log';
 
 export class Game {
     private map: Map = this.CreateMap();
@@ -161,12 +162,25 @@ export class Game {
         this.EndFrame();
 
         if (this.isPaused) {
-            Renderer.FillRect(Vector2.zero, Renderer.ViewportSize, new Color(0, 0, 0, 0.5).String);
+            UI.Backdrop();
+
             UI.Panel('Game Paused', 'Press ESC, Menu or Start to resume\nPress R, View or Select to restart', {
                 position: Vector2.zero,
                 size: new Vector2(400, 200),
                 anchor: 'center',
                 titleAlign: 'center',
+            });
+
+            const theme = UI.GetTheme();
+
+            const text = UI.Input({
+                position: new Vector2(0, 20),
+                size: new Vector2(400 - theme.padding.x * 2, 30),
+                anchor: 'center',
+                placeholder: 'Type something and press Enter...',
+                onSubmit: (value: string) => {
+                    Log.Info('Input submitted: ', value);
+                },
             });
         }
 
