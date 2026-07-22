@@ -4,6 +4,7 @@ import { Entity } from "./entity";
 import { Time } from "./time";
 import { Color } from "./color";
 import { Renderer } from "./renderer";
+import { Log } from "./log/log";
 
 /**
  * Represents an `Enemy` in the viewport that can follow a target `Entity`.
@@ -67,6 +68,8 @@ export class Enemy extends Entity {
         this.score = 0;
         this.target = null;
     }
+
+    public override Start(): void {}
 
     public override Update(): void {
         const destination = this.target?.position ?? this.position;

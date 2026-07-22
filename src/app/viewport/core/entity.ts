@@ -107,13 +107,12 @@ export abstract class Entity {
     /**
      * Creates an instance of `Entity`.
      *
-     * Initializes the `position`, `rotation`, `scale`, `speed` and `color`.
-     *
-     * @param {Vector2} position - The initial position of the `Entity`.
-     * @param {number} rotation - The initial rotation of the `Entity`.
-     * @param {Vector2} scale - The initial scale of the `Entity`.
-     * @param {number} speed - The initial speed of the `Entity`.
-     * @param {Color} color - The initial color of the `Entity`.
+     * @param {Vector2} [position=Vector2.zero] - The initial position of the `Entity` in world coordinates.
+     * @param {number} [rotation=0] - The initial rotation of the `Entity` in degrees.
+     * @param {Vector2} [scale=Vector2.one] - The initial scale of the `Entity`.
+     * @param {number} [speed=1] - The initial speed of the `Entity`.
+     * @param {Color} [color=Color.White] - The initial color of the `Entity`.
+     * @memberof Entity
      */
     constructor(
         position: Vector2 = Vector2.zero,
@@ -138,6 +137,7 @@ export abstract class Entity {
      *
      * @param {Entity} other - The other `Entity` to check for collision.
      * @returns {boolean} `true` if the entities collide, `false` otherwise.
+     * @memberof Entity
      */
     public CollidesWith(other: Entity): boolean {
         const a = this.bounds;
@@ -153,6 +153,7 @@ export abstract class Entity {
      * at a speed defined by this `Entity`'s `speed` property.
      *
      * @param {Entity} other - The `Entity` to follow.
+     * @memberof Entity
      */
     public Follow(other: Entity, smooth: boolean = true): void {
         this.FollowPosition(other.position, smooth);
@@ -165,6 +166,8 @@ export abstract class Entity {
      * at a speed defined by this `Entity`'s `speed` property.
      *
      * @param {Vector2} position - The position to follow.
+     * @param {boolean} [smooth=true] - Whether to smoothly interpolate towards the position or snap directly to it.
+     * @memberof Entity
      */
     public FollowPosition(position: Vector2, smooth: boolean = true): void {
         if (smooth) {
@@ -183,6 +186,7 @@ export abstract class Entity {
      * and adjusts this `Entity`'s position accordingly.
      *
      * @param {Entity} other - The `Entity` whose bounding box will be used to restrain this `Entity`.
+     * @memberof Entity
      */
     public RestrainInside(other: Entity): void {
         const thisBox = this.bounds;
@@ -200,6 +204,17 @@ export abstract class Entity {
     }
 
     /**
+     * Initializes the `Entity` when it is first created.
+     *
+     * This method is abstract and should be implemented by subclasses to define specific initialization behavior.
+     *
+     * @protected
+     * @abstract
+     * @memberof Entity
+     */
+    protected abstract Start(): void;
+
+    /**
      * Draws the `Entity` on the viewport.
      *
      * This method is abstract and should be implemented by subclasses to define specific drawing behavior.
@@ -209,17 +224,6 @@ export abstract class Entity {
      * @memberof Entity
      */
     protected abstract Draw(): void;
-
-    /**
-     * Initializes the `Entity` when it is first created.
-     *
-     * This method is abstract and should be implemented by subclasses to define specific initialization behavior.
-     *
-     * @protected
-     * @abstract
-     * @memberof Entity
-     */
-    protected Start(): void {}
 
     /**
      * Updates the state of the `Entity`.

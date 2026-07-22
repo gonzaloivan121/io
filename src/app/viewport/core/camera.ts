@@ -21,7 +21,7 @@ export class Camera extends Entity {
      * @memberof Camera
      */
     public zoom: number = 1;
-    
+
     /**
      * The speed at which the `Camera` zooms in and out when the mouse wheel is scrolled.
      *
@@ -50,7 +50,7 @@ export class Camera extends Entity {
 
     /**
      * Creates an instance of `Camera`.
-     * 
+     *
      * @param {Vector2} [position=Vector2.zero] - The initial position of the `Camera` in world coordinates.
      * @param {number} [rotation=0] - The initial rotation of the `Camera` in degrees.
      * @param {Vector2} [scale=Vector2.one] - The initial scale (width and height) of the `Camera`'s viewport.
@@ -120,7 +120,7 @@ export class Camera extends Entity {
         Renderer.Restore();
     }
 
-    public override Draw(): void {}
+    public override Start(): void {}
 
     public override Update(): void {
         this.scale = Renderer.ViewportSize;
@@ -153,6 +153,8 @@ export class Camera extends Entity {
 
         this.zoom = Math.max(this.minZoom, Math.min(this.zoom, this.maxZoom));
     }
+
+    public override Draw(): void {}
 
     /**
      * Converts a screen position to a world position based on the `Camera`'s position and zoom level.

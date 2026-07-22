@@ -121,12 +121,9 @@ export class Point extends Entity {
      */
     private ColorForValue(): Color {
         switch (this.value) {
-            case 1:
-                return Color.Bronze;
-            case 2:
-                return Color.Silver;
-            default:
-                return Color.Gold;
+            case 1:     return Color.Bronze;
+            case 2:     return Color.Silver;
+            default:    return Color.Gold;
         }
     }
 
@@ -139,6 +136,8 @@ export class Point extends Entity {
     public Expired(): boolean {
         return this.timer.Elapsed() > this.lifeTime * 1000;
     }
+
+    public override Start(): void {}
 
     public override Update(): void {}
 

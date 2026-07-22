@@ -33,6 +33,8 @@ export class Map extends Entity {
         super(position, rotation, scale, speed, color);
     }
 
+    public override Start(): void {}
+
     public override Update(): void {
         if (Input.GetKeyDown(KeyCode.G)) {
             this.drawGrid = !this.drawGrid;
