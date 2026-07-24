@@ -259,6 +259,20 @@ export class UIUtilities {
     }
 
     /**
+     * Determines whether a given point is inside a circle defined by its center and radius.
+     *
+     * @static
+     * @param {Vector2} point - The point to be checked.
+     * @param {Vector2} center - The center of the circle.
+     * @param {number} radius - The radius of the circle.
+     * @returns {boolean} `true` if the point is inside the circle, `false` otherwise.
+     * @memberof UIUtilities
+     */
+    public static IsPointInsideCircle(point: Vector2, center: Vector2, radius: number): boolean {
+        return Math.hypot(point.x - center.x, point.y - center.y) <= radius;
+    }
+
+    /**
      * Resolves the position of a UI element based on its anchor point and size.
      *
      * @static

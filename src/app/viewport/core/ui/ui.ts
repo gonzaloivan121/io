@@ -8,6 +8,7 @@ import { UIBackdrop } from './interfaces/ui-backdrop.interface';
 import { UILabel } from './interfaces/ui-label.interface';
 import { UIButton } from './interfaces/ui-button.interface';
 import { UIPanel } from './interfaces/ui-panel.interface';
+import { UIVirtualJoystick } from './interfaces/ui-virtual-joystick.interface';
 import { UIUtilities } from './ui-utilities';
 
 /**
@@ -47,6 +48,7 @@ export class UI {
         bodyFont: '14px monospace',
         buttonFont: '600 14px monospace',
         shadowBlur: 16,
+        shadowOffset: new Vector2(0, 6),
         textAlign: 'left',
         textBaseline: 'top',
     };
@@ -109,6 +111,7 @@ export class UI {
     public static GetTheme(): Readonly<UITheme> {
         return this.theme;
     }
+
 
     /**
      * Renders a backdrop on the screen with the specified options.
@@ -196,7 +199,7 @@ export class UI {
                         : this.theme.buttonDisabledTextColor,
                     font,
                     textAlign: options.textAlign ?? 'center',
-                    textBaseline: 'middle',
+                    textBaseline: options.textBaseline ?? 'middle',
                 },
             );
         });
@@ -240,6 +243,7 @@ export class UI {
             Renderer.ClearShadow();
 
             const titleAlign = options.titleAlign ?? 'left';
+            const titleBaseline = options.titleBaseline ?? 'top';
             const titleX =
                 titleAlign === 'center'
                     ? position.x + options.size.x * 0.5
@@ -251,7 +255,7 @@ export class UI {
                 fillStyle: options.titleColor ?? this.theme.panelTitleColor,
                 font: options.titleFont ?? this.theme.titleFont,
                 textAlign: titleAlign,
-                textBaseline: 'top',
+                textBaseline: titleBaseline,
             });
 
             const separatorY =
@@ -272,14 +276,94 @@ export class UI {
                 Renderer.DrawText(line, new Vector2(position.x + padding.x, cursorY), {
                     fillStyle: options.textColor ?? this.theme.panelTextColor,
                     font: options.contentFont ?? this.theme.bodyFont,
-                    textAlign: 'left',
-                    textBaseline: 'top',
+                    textAlign: options.contentAlign ?? 'left',
+                    textBaseline: options.contentBaseline ?? 'top',
                 });
 
                 cursorY +=
                     UIUtilities.MeasureLineHeight(options.contentFont ?? this.theme.bodyFont) +
                     lineGap;
             }
+        });
+    }
+
+    /**
+     * Renders the virtual joystick in screen space.
+     *
+     * @static
+     * @memberof UI
+     */
+    public static VirtualJoystick(id: string, options: UIVirtualJoystick): void {
+        Input.ConfigureVirtualJoystick(id, options);
+
+        if (!Input.VirtualJoystickEnabled || !(options.enabled ?? true)) {
+            return;
+        }
+
+        const metrics = Input.GetVirtualJoystickMetrics(id);
+
+        if (!metrics) {
+            return;
+        }
+
+        const ringFillStyle = options.ringFillStyle ?? (() => {
+            const gradient = Renderer.CreateRadialGradient(
+                metrics.center.x,
+                metrics.center.y,
+                metrics.outerRadius * 0.15,
+                metrics.center.x,
+                metrics.center.y,
+                metrics.outerRadius,
+            );
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            return gradient;
+        })();
+        const thumbCenter = new Vector2(
+            metrics.center.x + Input.GetVirtualJoystickThumbOffset(id).x,
+            metrics.center.y + Input.GetVirtualJoystickThumbOffset(id).y,
+        );
+        const thumbFillStyle = options.thumbFillStyle ?? (() => {
+            const gradient = Renderer.CreateRadialGradient(
+                thumbCenter.x - metrics.thumbRadius * 0.3,
+                thumbCenter.y - metrics.thumbRadius * 0.3,
+                metrics.thumbRadius * 0.2,
+                thumbCenter.x,
+                thumbCenter.y,
+                metrics.thumbRadius,
+            );
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+            gradient.addColorStop(1, 'rgba(198, 198, 198, 0.92)');
+
+            return gradient;
+        })();
+
+        UIUtilities.DrawScreenSpace(() => {
+            Renderer.DrawEllipse(
+                metrics.center,
+                new Vector2(metrics.outerRadius, metrics.outerRadius),
+                0,
+                ringFillStyle,
+                options.ringStrokeStyle ?? 'rgba(219, 219, 219, 0.78)',
+                options.ringLineWidth ?? 8,
+            );
+
+            Renderer.SetShadow(
+                options.shadowColor ?? this.theme.shadowColor,
+                options.shadowBlur ?? this.theme.shadowBlur,
+                options.shadowOffset?.x ?? this.theme.shadowOffset.x,
+                options.shadowOffset?.y ?? this.theme.shadowOffset.y
+            );
+            Renderer.DrawEllipse(
+                thumbCenter,
+                new Vector2(metrics.thumbRadius, metrics.thumbRadius),
+                0,
+                thumbFillStyle,
+                options.thumbStrokeStyle ?? 'rgba(255, 255, 255, 0.45)',
+                options.thumbLineWidth ?? 1,
+            );
+            Renderer.ClearShadow();
         });
     }
 
@@ -298,6 +382,7 @@ export class UI {
         const radius = options.radius ?? this.theme.buttonRadius;
         const font = options.font ?? this.theme.bodyFont;
         const textAlign = options.textAlign ?? 'left';
+        const textBaseline = options.textBaseline ?? 'middle';
         const id = options.id ?? UIUtilities.BuildInputId(options);
         const position = UIUtilities.ResolvePosition(
             options.position,
@@ -412,7 +497,7 @@ export class UI {
                 fillStyle: displayColor,
                 font,
                 textAlign,
-                textBaseline: 'middle',
+                textBaseline,
             });
 
             if (focused && UIUtilities.ShouldDrawCaret()) {

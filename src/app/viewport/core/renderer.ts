@@ -5,6 +5,7 @@ import {
     InvalidStateError,
     NotInitializedError,
 } from '../../errors';
+import { Log } from './log/log';
 
 /**
  * Type defining the possible repetition options for patterns used in the `Renderer`.
@@ -151,11 +152,8 @@ export class Renderer {
      * @memberof Renderer
      */
     static Initialize(context: CanvasRenderingContext2D): void {
-        if (!context) {
-            throw new InvalidArgumentError(
-                'Invalid canvas context provided for Renderer initialization. Please ensure that a valid CanvasRenderingContext2D is passed to Renderer.Initialize().',
-            );
-        }
+        Log.Info('Renderer.Initialize() - Initializing Renderer...');
+        Log.Trace('Renderer.Initialize() - Checking if Renderer is already initialized...');
 
         if (this.context) {
             throw new AlreadyInitializedError(
@@ -163,8 +161,27 @@ export class Renderer {
             );
         }
 
+        Log.Trace('Renderer.Initialize() - Renderer is not initialized. Proceeding with initialization...');
+        Log.Trace('Renderer.Initialize() - Checking canvas context...');
+        
+        if (!context) {
+            throw new InvalidArgumentError(
+                'Invalid canvas context provided for Renderer initialization. Please ensure that a valid CanvasRenderingContext2D is passed to Renderer.Initialize().',
+            );
+        }
+
+        Log.Trace('Renderer.Initialize() - Canvas context provided.');
+        
         this.context = context;
+        Log.Trace('Renderer.Initialize() - Canvas context set for Renderer.');
+
         this.context.imageSmoothingEnabled = true;
+        Log.Trace('Renderer.Initialize() - Canvas context configured with imageSmoothingEnabled = true.');
+
+        this.Resize();
+        Log.Trace('Renderer.Initialize() - Renderer resized to match current window size.');
+
+        Log.Trace('Renderer.Initialize() - Renderer initialized successfully.');
     }
 
     /**
@@ -176,14 +193,24 @@ export class Renderer {
      * @memberof Renderer
      */
     static Shutdown(): void {
+        Log.Info('Renderer.Shutdown() - Shutting down Renderer...');
+        Log.Trace('Renderer.Shutdown() - Checking if Renderer is initialized...');
+
         if (!this.context) {
             throw new NotInitializedError(
                 'Renderer has not been initialized. Please call Renderer.Initialize() with a valid canvas context before using the Renderer.',
             );
         }
 
+        Log.Trace('Renderer.Shutdown() - Renderer is initialized. Proceeding with shutdown...');
+
         this.context = null;
+        Log.Trace('Renderer.Shutdown() - Canvas context cleared for Renderer.');
+
         this.contextSaveDepth = 0;
+        Log.Trace('Renderer.Shutdown() - Context save depth reset.');
+
+        Log.Trace('Renderer.Shutdown() - Renderer shut down successfully.');
     }
 
     /**

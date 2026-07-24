@@ -2,6 +2,7 @@
  * Type defining the possible anchor positions for UI elements in the `UI` system.
  * 
  * @export
+ * @type {UIAnchor}
  */
 export type UIAnchor =
     | 'top-left'
