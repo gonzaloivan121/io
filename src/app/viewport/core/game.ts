@@ -1,10 +1,11 @@
 import { Vector2 } from '@xloxlolex/vector-math';
+import { Screen } from './screen';
 import { Enemy } from './enemy';
 import { Engine } from './engine';
 import { Player } from './player';
 import { Map } from './map';
 import { Point } from './point';
-import { Input, KeyCode, GamepadButton } from './input/input';
+import { Input, KeyCode, GamepadButton, GamepadAxis } from './input/input';
 import { Color } from './color';
 import { Camera } from './camera';
 import { Time } from './time';
@@ -14,6 +15,7 @@ import { Utilities } from './utilities';
 import { Renderer } from './renderer';
 import { UI } from './ui/ui';
 import { Log } from './log/log';
+import { Cursor } from './cursor';
 
 export class Game {
     private map: Map = this.CreateMap();
@@ -21,6 +23,7 @@ export class Game {
     private enemies: Enemy[] = this.CreateEnemies();
     private camera: Camera = this.CreateCamera();
     private points: Point[] = this.CreatePoints();
+    
     private isPaused: boolean = false;
 
     private eatScoreMargin: number = 100;
@@ -49,6 +52,26 @@ export class Game {
             Input.GetGamepadButtonDown(GamepadButton.View)) && this.isPaused
         ) {
             this.Restart();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F)) {
+            this.ToggleFullscreen();
+        }
+    }
+
+    private ToggleFullscreen(): void {
+        if (Screen.Fullscreen) {
+            Log.Trace(
+                'Game.HandleInput() - Screen is currently in fullscreen mode. Exiting fullscreen...',
+            );
+            Screen.ExitFullscreen();
+            Cursor.Show();
+        } else {
+            Log.Trace(
+                'Game.HandleInput() - Screen is currently not in fullscreen mode. Entering fullscreen...',
+            );
+            Screen.EnterFullscreen();
+            Cursor.Hide();
         }
     }
 
@@ -145,6 +168,12 @@ export class Game {
 
     private Draw(): void {
         this.EnsureInitialized();
+        
+        this.DrawGameplay();
+        this.DrawUI();
+    }
+
+    private DrawGameplay(): void {
         this.BeginFrame();
 
         this.map.Draw();
@@ -156,42 +185,85 @@ export class Game {
         for (const enemy of this.enemies) {
             enemy.Draw();
         }
-        
+
         this.player.Draw();
 
         this.EndFrame();
+    }
+
+    private DrawUI(): void {
+        UI.Button('Restart', this.Restart.bind(this), {
+            position: new Vector2(-20, 20),
+            size: new Vector2(120, 40),
+            anchor: 'top-right',
+        });
+
+        UI.Button('Fullscreen', () => {
+            this.ToggleFullscreen();
+        }, {
+            position: new Vector2(-20, 80),
+            size: new Vector2(120, 40),
+            anchor: 'top-right',
+        });
+
+        UI.Button(
+            'Pause',
+            () => {
+                this.isPaused = true;
+            },
+            {
+                position: new Vector2(-20, 140),
+                size: new Vector2(120, 40),
+                anchor: 'top-right',
+            },
+        );
 
         if (this.isPaused) {
             UI.Backdrop();
 
-            UI.Panel('Game Paused', 'Press ESC, Menu or Start to resume\nPress R, View or Select to restart', {
-                position: Vector2.zero,
-                size: new Vector2(400, 200),
-                anchor: 'center',
-                titleAlign: 'center',
-            });
-
-            const theme = UI.GetTheme();
-
-            const text = UI.Input({
-                position: new Vector2(0, 20),
-                size: new Vector2(400 - theme.padding.x * 2, 30),
-                anchor: 'center',
-                placeholder: 'Type something and press Enter...',
-                onSubmit: (value: string) => {
-                    Log.Info('Input submitted: ', value);
+            UI.Panel(
+                'Game Paused',
+                'Press ESC, Menu or Start to resume\nPress R, View or Select to restart',
+                {
+                    position: Vector2.zero,
+                    size: new Vector2(400, 200),
+                    anchor: 'center',
+                    titleAlign: 'center',
                 },
-            });
+            );
+
+            return;
         }
 
         const leadingEnemyScore = this.GetLeadingEnemyScore();
-        const raceStatus = leadingEnemyScore > this.player.scoreValue ? 'Enemies are winning' : 'Player is winning';
+        const raceStatus =
+            leadingEnemyScore > this.player.scoreValue
+                ? 'Enemies are winning'
+                : 'Player is winning';
 
-        UI.Panel('Score Race', `Player: ${this.player.scoreValue}\nEnemy lead: ${leadingEnemyScore}\n${raceStatus}`, {
-            position: new Vector2(20, 20),
-            size: new Vector2(240, 125),
-            anchor: 'top-left',
-            titleAlign: 'center',
+        UI.Panel(
+            'Score Race',
+            `Player: ${this.player.scoreValue}\nEnemy lead: ${leadingEnemyScore}\n${raceStatus}`,
+            {
+                position: new Vector2(20, 20),
+                size: new Vector2(240, 125),
+                anchor: 'top-left',
+                titleAlign: 'center',
+            },
+        );
+
+        UI.VirtualJoystick('movement', {
+            position: new Vector2(24, -24),
+            anchor: 'bottom-left',
+            xAxis: GamepadAxis.LeftStickX,
+            yAxis: GamepadAxis.LeftStickY,
+        });
+
+        UI.VirtualJoystick('camera', {
+            position: new Vector2(-24, -24),
+            anchor: 'bottom-right',
+            xAxis: GamepadAxis.RightStickX,
+            yAxis: GamepadAxis.RightStickY,
         });
     }
 

@@ -75,6 +75,7 @@ export class Events {
      * @memberof Events
      */
     public static OnMouseDown(event: MouseEvent): void {
+        Input.SetMousePosition(event.clientX, event.clientY);
         Input.SetMouseButton(event.button as MouseButton);
     }
 
@@ -88,6 +89,7 @@ export class Events {
      * @memberof Events
      */
     public static OnMouseUp(event: MouseEvent): void {
+        Input.SetMousePosition(event.clientX, event.clientY);
         Input.UnsetMouseButton(event.button as MouseButton);
     }
 
@@ -132,5 +134,65 @@ export class Events {
      */
     public static OnGamepadDisconnected(event: GamepadEvent): void {
         Input.RemoveGamepad(event.gamepad);
+    }
+
+    /**
+     * Handles the pointer down event.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer down event to process.
+     * @memberof Events
+     */
+    public static OnPointerDown(event: PointerEvent): void {
+        Input.SetMousePosition(event.clientX, event.clientY);
+        Input.OnPointerDown(event);
+
+        if (!event.defaultPrevented) {
+            Input.SetMouseButton(MouseButton.Left);
+        }
+    }
+
+    /**
+     * Handles the pointer move event.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer move event to process.
+     * @memberof Events
+     */
+    public static OnPointerMove(event: PointerEvent): void {
+        Input.SetMousePosition(event.clientX, event.clientY);
+        Input.OnPointerMove(event);
+    }
+
+    /**
+     * Handles the pointer up event.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer up event to process.
+     * @memberof Events
+     */
+    public static OnPointerUp(event: PointerEvent): void {
+        Input.SetMousePosition(event.clientX, event.clientY);
+        Input.OnPointerUp(event);
+
+        if (!event.defaultPrevented) {
+            Input.UnsetMouseButton(MouseButton.Left);
+        }
+    }
+
+    /**
+     * Handles the pointer cancel event.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer cancel event to process.
+     * @memberof Events
+     */
+    public static OnPointerCancel(event: PointerEvent): void {
+        Input.SetMousePosition(event.clientX, event.clientY);
+        Input.OnPointerCancel(event);
+
+        if (!event.defaultPrevented) {
+            Input.UnsetMouseButton(MouseButton.Left);
+        }
     }
 }

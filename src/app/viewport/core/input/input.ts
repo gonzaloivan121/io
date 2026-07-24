@@ -5,6 +5,16 @@ import { GamepadButton } from "./gamepad-button";
 import { GamepadAxis } from "./gamepad-axis";
 import { KeyCode } from "./key-code";
 import { InvalidArgumentError } from "../../../errors";
+import { Log } from "../log/log";
+import { Device } from "../device";
+import { UIAnchor } from "../ui/types/ui-anchor.type";
+import { UIVirtualJoystick } from "../ui/interfaces/ui-virtual-joystick.interface";
+
+interface VirtualJoystickState {
+    options: UIVirtualJoystick;
+    thumbOffset: Vector2;
+    activePointerId: number | null;
+}
 
 /**
  * Represents the input system for handling keyboard and mouse inputs.
@@ -25,6 +35,14 @@ import { InvalidArgumentError } from "../../../errors";
  * and translating them into actions within the game or application.
  */
 export class Input {
+    private static readonly virtualJoystickDesktopMargin: number = 24;
+    private static readonly virtualJoystickMobileMargin: number = 16;
+    private static readonly virtualJoystickDesktopOuterRadius: number = 72;
+    private static readonly virtualJoystickMobileOuterRadius: number = 64;
+    private static readonly virtualJoystickDesktopThumbRadius: number = 36;
+    private static readonly virtualJoystickMobileThumbRadius: number = 32;
+    private static readonly virtualJoystickDistanceFactor: number = 0.56;
+
     /**
      * The current position of the mouse in the viewport.
      *
@@ -110,6 +128,19 @@ export class Input {
     private static previousMouseButtons: boolean[] = [];
 
     /**
+     * Mouse buttons that were pressed during the current frame.
+     *
+     * This allows pointer taps that begin and end between updates to still
+     * register as a click for one frame.
+     *
+     * @private
+     * @static
+     * @type {boolean[]}
+     * @memberof Input
+     */
+    private static mouseButtonPressedThisFrame: boolean[] = [];
+
+    /**
      * Current gamepad button states by gamepad index.
      *
      * This is a static object that tracks the current state of gamepad buttons for each connected gamepad.
@@ -149,6 +180,19 @@ export class Input {
     private static currentGamepadAxes: { [gamepadIndex: number]: number[] } = {};
 
     /**
+     * Virtual gamepad axis states by gamepad index.
+     *
+     * This is used by touch-first controls, such as the mobile virtual joystick,
+     * to feed axis input through the same path as physical gamepads.
+     *
+     * @private
+     * @static
+     * @type {{ [gamepadIndex: number]: number[] }}
+     * @memberof Input
+     */
+    private static virtualGamepadAxes: { [gamepadIndex: number]: number[] } = {};
+
+    /**
      * The list of connected gamepads.
      *
      * This is a static array that tracks the currently connected gamepads.
@@ -161,6 +205,9 @@ export class Input {
      * @memberof Input
      */
     private static gamepads: Gamepad[] = [];
+
+    private static virtualJoysticks: { [id: string]: VirtualJoystickState } = {};
+    private static activeVirtualJoystickIdsByPointer: { [pointerId: number]: string } = {};
 
     /**
      * Gets the current mouse position in the viewport.
@@ -187,13 +234,127 @@ export class Input {
     }
 
     /**
+     * Returns whether the virtual joystick should be active for the current device.
+     *
+     * @readonly
+     * @static
+     * @type {boolean}
+     * @memberof Input
+     */
+    public static get VirtualJoystickEnabled(): boolean {
+        return Device.Mobile || Device.Phone || Device.Tablet;
+    }
+
+    /**
      * Initializes the input system.
      *
      * @static
      * @memberof Input
      */
     public static Initialize(): void {
-        // Initialize the input system, if needed.
+        Log.Info('Input.Initialize() - Initializing Input...');
+
+        Log.Trace('Input.Initialize() - Input initialized successfully.');
+    }
+
+    /**
+     * Configures a virtual joystick by its unique identifier.
+     *
+     * @static
+     * @param {string} id - The unique joystick identifier.
+     * @param {UIVirtualJoystick} options - The joystick configuration.
+     * @memberof Input
+     */
+    public static ConfigureVirtualJoystick(id: string, options: UIVirtualJoystick): void {
+        const previousState = this.virtualJoysticks[id];
+
+        this.virtualJoysticks[id] = {
+            options,
+            thumbOffset: previousState?.thumbOffset ?? new Vector2(0, 0),
+            activePointerId: previousState?.activePointerId ?? null,
+        };
+
+        if (!(options.enabled ?? true) && previousState?.activePointerId !== null) {
+            this.ResetVirtualJoystick(id);
+        }
+    }
+
+    /**
+     * Returns the current layout metrics for a virtual joystick.
+     *
+     * @static
+     * @param {string} id - The unique joystick identifier.
+     * @returns {{ center: Vector2; outerRadius: number; thumbRadius: number; maxThumbDistance: number; } | null}
+     * The resolved center point and radii used to draw and hit-test the joystick.
+     * @memberof Input
+     */
+    public static GetVirtualJoystickMetrics(id: string): {
+        center: Vector2;
+        outerRadius: number;
+        thumbRadius: number;
+        maxThumbDistance: number;
+    } | null {
+        const joystick = this.virtualJoysticks[id];
+
+        if (!joystick) {
+            return null;
+        }
+
+        const options = joystick.options;
+        const compactLayout = Device.ViewportWidth <= 768;
+        const margin = compactLayout
+            ? this.virtualJoystickMobileMargin
+            : this.virtualJoystickDesktopMargin;
+        const outerRadius = options.outerRadius ?? (compactLayout
+            ? this.virtualJoystickMobileOuterRadius
+            : this.virtualJoystickDesktopOuterRadius);
+        const thumbRadius = options.thumbRadius ?? (compactLayout
+            ? this.virtualJoystickMobileThumbRadius
+            : this.virtualJoystickDesktopThumbRadius);
+        const size = new Vector2(outerRadius * 2, outerRadius * 2);
+        const position = this.ResolveAnchoredPosition(options.position, options.anchor, size);
+
+        return {
+            center: new Vector2(
+                position.x + outerRadius,
+                position.y + outerRadius,
+            ),
+            outerRadius,
+            thumbRadius,
+            maxThumbDistance: options.maxThumbDistance ?? Math.max(1, outerRadius * this.virtualJoystickDistanceFactor),
+        };
+    }
+
+    /**
+     * Returns the current thumb offset for a virtual joystick.
+     *
+     * @static
+     * @param {string} id - The unique joystick identifier.
+     * @returns {Vector2} The current thumb offset.
+     * @memberof Input
+     */
+    public static GetVirtualJoystickThumbOffset(id: string): Vector2 {
+        const joystick = this.virtualJoysticks[id];
+
+        return joystick ? joystick.thumbOffset : new Vector2(0, 0);
+    }
+
+    /**
+     * Determines whether a screen-space point lies within the virtual joystick hit area.
+     *
+     * @static
+     * @param {Vector2} point - The screen-space point to test.
+     * @returns {boolean} `true` if the point is inside the joystick region, `false` otherwise.
+     * @memberof Input
+     */
+    public static IsPointInsideVirtualJoystick(id: string, point: Vector2): boolean {
+        const metrics = this.GetVirtualJoystickMetrics(id);
+
+        if (!metrics) {
+            return false;
+        }
+
+        return Math.hypot(point.x - metrics.center.x, point.y - metrics.center.y) <= metrics.outerRadius;
     }
 
     /**
@@ -211,6 +372,7 @@ export class Input {
     public static Update(): void {
         this.previousKeyCodes = [...this.currentKeyCodes];
         this.previousMouseButtons = [...this.currentMouseButtons];
+        this.mouseButtonPressedThisFrame = [];
         this.previousGamepadButtons = {};
 
         for (const gamepadIndexKey of Object.keys(this.currentGamepadButtons)) {
@@ -267,6 +429,31 @@ export class Input {
     }
 
     /**
+     * Shuts down the input system and performs any necessary cleanup.
+     *
+     * @static
+     * @memberof Input
+     */
+    public static Shutdown(): void {
+        Log.Info('Input.Shutdown() - Shutting down Input...');
+
+        this.gamepads = [];
+        this.currentGamepadAxes = {};
+        this.virtualGamepadAxes = {};
+        this.currentGamepadButtons = {};
+        this.previousGamepadButtons = {};
+        this.currentKeyCodes = [];
+        this.currentMouseButtons = [];
+        this.previousKeyCodes = [];
+        this.previousMouseButtons = [];
+        this.scrollDelta = 0;
+        this.virtualJoysticks = {};
+        this.activeVirtualJoystickIdsByPointer = {};
+
+        Log.Trace('Input.Shutdown() - Input shut down successfully.');
+    }
+
+    /**
      * Sets the mouse position to the specified coordinates.
      *
      * This method updates the static MousePosition property,
@@ -319,6 +506,7 @@ export class Input {
      */
     public static SetMouseButton(mouseButton: MouseButton): void {
         this.currentMouseButtons[mouseButton] = true;
+        this.mouseButtonPressedThisFrame[mouseButton] = true;
     }
 
     /**
@@ -346,6 +534,84 @@ export class Input {
      */
     public static SetMouseScrollDelta(delta: number): void {
         this.scrollDelta += delta;
+    }
+
+    /**
+     * Sets a virtual gamepad axis value.
+     *
+     * This is primarily used by touch controls so they can share the same axis
+     * query path as a physical gamepad.
+     *
+     * @static
+     * @param {GamepadAxis} axis - The axis to update.
+     * @param {number} value - The normalized axis value in range `[-1, 1]`.
+     * @param {number} gamepadIndex - The virtual gamepad index. Defaults to `0`.
+     * @memberof Input
+     */
+    public static SetVirtualGamepadAxis(
+        axis: GamepadAxis,
+        value: number,
+        gamepadIndex: number = 0,
+    ): void {
+        if (!this.virtualGamepadAxes[gamepadIndex]) {
+            this.virtualGamepadAxes[gamepadIndex] = [];
+        }
+
+        this.virtualGamepadAxes[gamepadIndex][axis] = Math.max(-1, Math.min(1, value));
+    }
+
+    /**
+     * Clears all virtual gamepad axes for the specified index.
+     *
+     * @static
+     * @param {number} gamepadIndex - The virtual gamepad index. Defaults to `0`.
+     * @memberof Input
+     */
+    public static ClearVirtualGamepadAxes(gamepadIndex: number = 0): void {
+        delete this.virtualGamepadAxes[gamepadIndex];
+    }
+
+    /**
+     * Clears a single virtual gamepad axis for the specified index.
+     *
+     * @static
+     * @param {GamepadAxis} axis - The axis to clear.
+     * @param {number} gamepadIndex - The virtual gamepad index. Defaults to `0`.
+     * @memberof Input
+     */
+    public static ClearVirtualGamepadAxis(axis: GamepadAxis, gamepadIndex: number = 0): void {
+        if (!this.virtualGamepadAxes[gamepadIndex]) {
+            return;
+        }
+
+        this.virtualGamepadAxes[gamepadIndex][axis] = 0;
+    }
+
+    /**
+     * Resets a virtual joystick thumb and its mapped axes to their centered state.
+     *
+     * @static
+     * @param {string} id - The unique joystick identifier.
+     * @memberof Input
+     */
+    public static ResetVirtualJoystick(id: string): void {
+        const joystick = this.virtualJoysticks[id];
+
+        if (!joystick) {
+            return;
+        }
+
+        if (joystick.activePointerId !== null) {
+            delete this.activeVirtualJoystickIdsByPointer[joystick.activePointerId];
+        }
+
+        joystick.activePointerId = null;
+        joystick.thumbOffset = new Vector2(0, 0);
+
+        const gamepadIndex = joystick.options.gamepadIndex ?? 0;
+
+        this.ClearVirtualGamepadAxis(joystick.options.xAxis ?? GamepadAxis.LeftStickX, gamepadIndex);
+        this.ClearVirtualGamepadAxis(joystick.options.yAxis ?? GamepadAxis.LeftStickY, gamepadIndex);
     }
 
     /**
@@ -404,7 +670,10 @@ export class Input {
      * @memberof Input
      */
     public static GetMouseButtonDown(mouseButton: MouseButton): boolean {
-        return this.currentMouseButtons[mouseButton] && !this.previousMouseButtons[mouseButton];
+        return (
+            (this.mouseButtonPressedThisFrame[mouseButton] ?? false) ||
+            (this.currentMouseButtons[mouseButton] && !this.previousMouseButtons[mouseButton])
+        );
     }
 
     /**
@@ -619,7 +888,234 @@ export class Input {
      * @memberof Input
      */
     private static GetCurrentGamepadAxisState(gamepadIndex: number, axis: GamepadAxis): number {
-        return this.currentGamepadAxes[gamepadIndex]?.[axis] ?? 0;
+        const physicalValue = this.currentGamepadAxes[gamepadIndex]?.[axis] ?? 0;
+        const virtualValue = this.virtualGamepadAxes[gamepadIndex]?.[axis] ?? 0;
+
+        if (axis === GamepadAxis.LeftTrigger || axis === GamepadAxis.RightTrigger) {
+            return Math.max(physicalValue, virtualValue);
+        }
+
+        return Math.abs(virtualValue) > Math.abs(physicalValue) ? virtualValue : physicalValue;
+    }
+
+    /**
+     * Handles pointer down events for the virtual joystick.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer event to process.
+     * @memberof Input
+     */
+    public static OnPointerDown(event: PointerEvent): void {
+        if (!this.VirtualJoystickEnabled) {
+            return;
+        }
+
+        const pointerPosition = new Vector2(event.clientX, event.clientY);
+        const joystickId = this.FindVirtualJoystickAtPoint(pointerPosition);
+
+        if (!joystickId) {
+            return;
+        }
+
+        this.virtualJoysticks[joystickId].activePointerId = event.pointerId;
+        this.activeVirtualJoystickIdsByPointer[event.pointerId] = joystickId;
+        event.preventDefault();
+        this.UpdateVirtualJoystick(joystickId, event.clientX, event.clientY);
+    }
+
+    /**
+     * Handles pointer move events for the virtual joystick.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer event to process.
+     * @memberof Input
+     */
+    public static OnPointerMove(event: PointerEvent): void {
+        const joystickId = this.activeVirtualJoystickIdsByPointer[event.pointerId];
+
+        if (!joystickId) {
+            return;
+        }
+
+        event.preventDefault();
+        this.UpdateVirtualJoystick(joystickId, event.clientX, event.clientY);
+    }
+
+    /**
+     * Handles pointer release and cancel events for the virtual joystick.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer event to process.
+     * @memberof Input
+     */
+    public static OnPointerUp(event: PointerEvent): void {
+        const joystickId = this.activeVirtualJoystickIdsByPointer[event.pointerId];
+
+        if (!joystickId) {
+            return;
+        }
+
+        event.preventDefault();
+        this.ResetVirtualJoystick(joystickId);
+    }
+
+    /**
+     * Handles pointer cancel events for the virtual joystick.
+     *
+     * @static
+     * @param {PointerEvent} event - The pointer event to process.
+     * @memberof Input
+     */
+    public static OnPointerCancel(event: PointerEvent): void {
+        this.OnPointerUp(event);
+    }
+
+    /**
+     * Updates the virtual joystick thumb offset and left stick axis values.
+     *
+     * @private
+     * @static
+     * @param {number} clientX - The pointer x-coordinate in screen space.
+     * @param {number} clientY - The pointer y-coordinate in screen space.
+     * @memberof Input
+     */
+    private static UpdateVirtualJoystick(id: string, clientX: number, clientY: number): void {
+        const joystick = this.virtualJoysticks[id];
+        const metrics = this.GetVirtualJoystickMetrics(id);
+
+        if (!joystick || !metrics) {
+            return;
+        }
+
+        const deltaX = clientX - metrics.center.x;
+        const deltaY = clientY - metrics.center.y;
+        const maxDistance = Math.max(1, metrics.maxThumbDistance);
+        const distance = Math.hypot(deltaX, deltaY);
+        const clampScale = distance > maxDistance ? maxDistance / distance : 1;
+        const clampedX = deltaX * clampScale;
+        const clampedY = deltaY * clampScale;
+
+        joystick.thumbOffset = new Vector2(clampedX, clampedY);
+
+        const gamepadIndex = joystick.options.gamepadIndex ?? 0;
+
+        this.SetVirtualGamepadAxis(
+            joystick.options.xAxis ?? GamepadAxis.LeftStickX,
+            clampedX / maxDistance,
+            gamepadIndex,
+        );
+        this.SetVirtualGamepadAxis(
+            joystick.options.yAxis ?? GamepadAxis.LeftStickY,
+            clampedY / maxDistance,
+            gamepadIndex,
+        );
+    }
+
+    /**
+     * Finds the closest enabled virtual joystick under the provided point.
+     *
+     * @private
+     * @static
+     * @param {Vector2} point - The screen-space point to test.
+     * @returns {(string | null)} The matching joystick identifier, or `null`.
+     * @memberof Input
+     */
+    private static FindVirtualJoystickAtPoint(point: Vector2): string | null {
+        let selectedId: string | null = null;
+        let selectedDistance: number = Number.POSITIVE_INFINITY;
+
+        for (const [id, joystick] of Object.entries(this.virtualJoysticks)) {
+            if (!(joystick.options.enabled ?? true) || joystick.activePointerId !== null) {
+                continue;
+            }
+
+            const metrics = this.GetVirtualJoystickMetrics(id);
+
+            if (!metrics || !this.IsPointInsideVirtualJoystick(id, point)) {
+                continue;
+            }
+
+            const distance = Math.hypot(point.x - metrics.center.x, point.y - metrics.center.y);
+
+            if (distance < selectedDistance) {
+                selectedDistance = distance;
+                selectedId = id;
+            }
+        }
+
+        return selectedId;
+    }
+
+    /**
+     * Resolves a joystick position relative to the viewport using the provided anchor and size.
+     *
+     * @private
+     * @static
+     * @param {Vector2} position - The position relative to the anchor origin.
+     * @param {UIAnchor} [anchor='bottom-left'] - The viewport anchor.
+     * @param {Vector2} size - The joystick bounds size.
+     * @returns {Vector2} The resolved top-left position.
+     * @memberof Input
+     */
+    private static ResolveAnchoredPosition(
+        position: Vector2,
+        anchor: UIAnchor = 'bottom-left',
+        size: Vector2,
+    ): Vector2 {
+        const origin = this.GetAnchorOrigin(anchor);
+
+        return new Vector2(
+            origin.x + position.x - size.x * this.GetHorizontalAnchorFactor(anchor),
+            origin.y + position.y - size.y * this.GetVerticalAnchorFactor(anchor),
+        );
+    }
+
+    private static GetAnchorOrigin(anchor: UIAnchor): Vector2 {
+        switch (anchor) {
+            case 'top-center':
+                return new Vector2(Device.ViewportWidth * 0.5, 0);
+            case 'top-right':
+                return new Vector2(Device.ViewportWidth, 0);
+            case 'center-left':
+                return new Vector2(0, Device.ViewportHeight * 0.5);
+            case 'center':
+                return new Vector2(Device.ViewportWidth * 0.5, Device.ViewportHeight * 0.5);
+            case 'center-right':
+                return new Vector2(Device.ViewportWidth, Device.ViewportHeight * 0.5);
+            case 'bottom-center':
+                return new Vector2(Device.ViewportWidth * 0.5, Device.ViewportHeight);
+            case 'bottom-right':
+                return new Vector2(Device.ViewportWidth, Device.ViewportHeight);
+            case 'bottom-left':
+                return new Vector2(0, Device.ViewportHeight);
+            case 'top-left':
+            default:
+                return Vector2.zero;
+        }
+    }
+
+    private static GetHorizontalAnchorFactor(anchor: UIAnchor): number {
+        if (anchor.endsWith('right')) {
+            return 1;
+        }
+
+        if (anchor.includes('center')) {
+            return 0.5;
+        }
+
+        return 0;
+    }
+
+    private static GetVerticalAnchorFactor(anchor: UIAnchor): number {
+        if (anchor.startsWith('bottom')) {
+            return 1;
+        }
+
+        if (anchor.startsWith('center')) {
+            return 0.5;
+        }
+
+        return 0;
     }
 }
 

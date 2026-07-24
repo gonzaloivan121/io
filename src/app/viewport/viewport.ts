@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Host, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Host, HostListener, OnDestroy, ViewChild } from '@angular/core';
 
 import { Engine } from './core/engine';
 import { Events } from './core/events';
@@ -10,7 +10,7 @@ import { Game } from './core/game';
     templateUrl: './viewport.html',
     styleUrl: './viewport.css',
 })
-export class Viewport implements AfterViewInit {
+export class Viewport implements AfterViewInit, OnDestroy {
     @ViewChild('canvas', { static: false })
     private canvas!: ElementRef<HTMLCanvasElement>;
 
@@ -18,6 +18,10 @@ export class Viewport implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.Initialize();
+    }
+
+    ngOnDestroy(): void {
+        Engine.Shutdown();
     }
 
     @HostListener('window:resize', ['$event'])
@@ -69,6 +73,26 @@ export class Viewport implements AfterViewInit {
     @HostListener('window:gamepaddisconnected', ['$event'])
     OnGamepadDisconnected(event: GamepadEvent): void {
         Events.OnGamepadDisconnected(event);
+    }
+
+    @HostListener('window:pointerdown', ['$event'])
+    OnPointerDown(event: PointerEvent): void {
+        Events.OnPointerDown(event);
+    }
+
+    @HostListener('window:pointermove', ['$event'])
+    OnPointerMove(event: PointerEvent): void {
+        Events.OnPointerMove(event);
+    }
+
+    @HostListener('window:pointerup', ['$event'])
+    OnPointerUp(event: PointerEvent): void {
+        Events.OnPointerUp(event);
+    }
+
+    @HostListener('window:pointercancel', ['$event'])
+    OnPointerCancel(event: PointerEvent): void {
+        Events.OnPointerCancel(event);
     }
 
     private Initialize(): void {
