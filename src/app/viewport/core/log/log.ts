@@ -1,5 +1,4 @@
 import { InvalidArgumentError } from '../../../errors';
-import { Color } from '../color';
 import { LogLevel } from './log-level';
 
 /**
@@ -28,12 +27,12 @@ export class Log {
      * @memberof Log
      */
     private static readonly LEVEL_STYLES: Record<LogLevel, string> = {
-        [LogLevel.Trace]: `color: ${Color.Trace.String}; font-weight: normal;`,
-        [LogLevel.Debug]: `color: ${Color.Debug.String}; font-weight: normal;`,
-        [LogLevel.Info]: `color: ${Color.Info.String}; font-weight: normal;`,
-        [LogLevel.Warn]: `color: ${Color.Warn.String}; font-weight: bold;`,
-        [LogLevel.Error]: `color: ${Color.Error.String}; font-weight: bold;`,
-        [LogLevel.Fatal]: `color: ${Color.Fatal.String}; font-weight: bold;`,
+        [LogLevel.Trace]:   'color: #999999; font-weight: bold;',
+        [LogLevel.Debug]:   'color: #40BF59; font-weight: bold;',
+        [LogLevel.Info]:    'color: #3399E6; font-weight: bold;',
+        [LogLevel.Warn]:    'color: #F2A626; font-weight: bold;',
+        [LogLevel.Error]:   'color: #D94040; font-weight: bold;',
+        [LogLevel.Fatal]:   'color: #A62626; font-weight: bold;',
     };
 
     /**
@@ -43,7 +42,11 @@ export class Log {
      * @memberof Log
      */
     public static Initialize(): void {
-        // Initialize the logging system, if needed.
+        Log.Info('Log.Initialize() - Initializing Log...');
+
+        // Additional initialization logic can be added here if needed.
+
+        Log.Trace('Log.Initialize() - Log initialized successfully.');
     }
 
     /**
