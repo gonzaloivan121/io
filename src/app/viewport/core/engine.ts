@@ -2,9 +2,10 @@ import { Vector2 } from '@xloxlolex/vector-math';
 import { Time } from './time';
 import { Color } from './color';
 import { Renderer } from './renderer';
-import { InvalidArgumentError, NotFoundError } from '../../errors';
+import { InvalidArgumentError } from '../../errors';
 import { Input } from './input/input';
 import { Log } from './log/log';
+import { Network } from './network/network';
 
 /**
  * Represents the core engine of the application, responsible for managing the game loop, rendering, and timing.
@@ -34,15 +35,26 @@ export class Engine {
      * @memberof Engine
      */
     public static Initialize(canvas: HTMLCanvasElement): void {
+        Log.Initialize();
+
+        Log.Info('Engine.Initialize() - Initializing Engine...');
+        Log.Trace('Engine.Initialize() - Checking canvas element...');
+
         if (!canvas) {
             throw new InvalidArgumentError(
-                'Canvas element must be provided for engine initialization.',
+                'Canvas element must be provided for Engine initialization.',
             );
         }
+
+        Log.Trace('Engine.Initialize() - Canvas element provided.');
+
+        Log.Trace('Engine.Initialize() - Getting 2D context from canvas...');
 
         const context = canvas.getContext('2d', {
             alpha: false,
         });
+
+        Log.Trace('Engine.Initialize() - Checking 2D context from canvas...');
 
         if (!context) {
             throw new InvalidArgumentError(
@@ -50,12 +62,14 @@ export class Engine {
             );
         }
 
-        Log.Initialize();
+        Log.Trace('Engine.Initialize() - 2D context obtained from canvas.');
+        Log.Trace('Engine.Initialize() - Initializing Renderer, Input, and Network  ...');
 
         Renderer.Initialize(context);
-        Renderer.Resize();
-
         Input.Initialize();
+        Network.Initialize();
+
+        Log.Info('Engine.Initialize() - Engine initialized successfully.');
     }
 
     /**
@@ -94,7 +108,37 @@ export class Engine {
      * @memberof Engine
      */
     public static Stop(): void {
+        Log.Trace('Engine.Stop() - Stopping the game loop...');
+
+        if (!this.intervalId) {
+            Log.Warn('Engine.Stop() - No active game loop to stop.');
+            return;
+        }
+
         cancelAnimationFrame(this.intervalId);
+        this.intervalId = 0;
+
+        Log.Trace('Engine.Stop() - Game loop stopped successfully.');
+    }
+
+    /**
+     * Shuts down the engine and cleans up resources.
+     *
+     * @static
+     * @memberof Engine
+     */
+    public static Shutdown(): void {
+        Log.Info('Engine.Shutdown() - Shutting down Engine...');
+
+        this.Stop();
+
+        Log.Trace('Engine.Shutdown() - Shutting down Renderer, Input, and Network...');
+
+        Renderer.Shutdown();
+        Input.Shutdown();
+        Network.Shutdown();
+
+        Log.Info('Engine.Shutdown() - Engine shut down successfully.');
     }
 
     /**
