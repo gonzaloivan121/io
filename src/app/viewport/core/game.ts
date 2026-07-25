@@ -14,8 +14,9 @@ import { NotInitializedError } from '../../errors';
 import { Utilities } from './utilities';
 import { Renderer } from './renderer';
 import { UI } from './ui/ui';
-import { Log } from './log/log';
 import { Cursor } from './cursor';
+import { UIPanelContentItem, UIPanelInlineRun } from './ui/interfaces/ui-panel.interface';
+import { InputIconRegistry } from './input/input-icon-registry';
 
 export class Game {
     private map: Map = this.CreateMap();
@@ -23,7 +24,7 @@ export class Game {
     private enemies: Enemy[] = this.CreateEnemies();
     private camera: Camera = this.CreateCamera();
     private points: Point[] = this.CreatePoints();
-    
+
     private isPaused: boolean = false;
 
     private eatScoreMargin: number = 100;
@@ -40,16 +41,13 @@ export class Game {
     }
 
     private HandleInput(): void {
-        if (
-            Input.GetKeyDown(KeyCode.Escape) ||
-            Input.GetGamepadButtonDown(GamepadButton.Menu)
-        ) {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetGamepadButtonDown(GamepadButton.Menu)) {
             this.isPaused = !this.isPaused;
         }
 
-        if ((
-            Input.GetKeyDown(KeyCode.R) ||
-            Input.GetGamepadButtonDown(GamepadButton.View)) && this.isPaused
+        if (
+            (Input.GetKeyDown(KeyCode.R) || Input.GetGamepadButtonDown(GamepadButton.View)) &&
+            this.isPaused
         ) {
             this.Restart();
         }
@@ -162,7 +160,7 @@ export class Game {
 
     private Draw(): void {
         this.EnsureInitialized();
-        
+
         this.DrawGameplay();
         this.DrawUI();
     }
@@ -196,13 +194,17 @@ export class Game {
             anchor: 'top-right',
         });
 
-        UI.Button('Fullscreen', () => {
-            this.ToggleFullscreen();
-        }, {
-            position: new Vector2(-20, 80),
-            size: new Vector2(120, 40),
-            anchor: 'top-right',
-        });
+        UI.Button(
+            'Fullscreen',
+            () => {
+                this.ToggleFullscreen();
+            },
+            {
+                position: new Vector2(-20, 80),
+                size: new Vector2(120, 40),
+                anchor: 'top-right',
+            },
+        );
 
         UI.Button(
             this.isPaused ? 'Resume' : 'Pause',
@@ -217,16 +219,55 @@ export class Game {
         );
 
         if (this.isPaused) {
-            UI.Panel(
-                'Game Paused',
-                'Press ESC, Menu or Start to resume\nPress R, View or Select to restart',
-                {
-                    position: Vector2.zero,
-                    size: new Vector2(400, 200),
-                    anchor: 'center',
-                    titleAlign: 'center',
+            const pausePanelContent = this.BuildPausePanelContent();
+
+            UI.Panel('Game Paused', pausePanelContent, {
+                position: Vector2.zero,
+                size: new Vector2(520, 220),
+                anchor: 'center',
+                titleAlign: 'center',
+                lineGap: 10,
+                onDrawContent: (contentArea) => {
+                    UI.Button(
+                        'Resume',
+                        () => {
+                            this.isPaused = false;
+                        },
+                        {
+                            position: new Vector2(contentArea.position.x, contentArea.position.y + contentArea.size.y - 40),
+                            size: new Vector2(120, 40),
+                        },
+                    );
+
+                    UI.Button(
+                        'Restart',
+                        () => {
+                            this.Restart();
+                        },
+                        {
+                            position: new Vector2(
+                                contentArea.position.x + contentArea.size.x - 120,
+                                contentArea.position.y + contentArea.size.y - 40
+                            ),
+                            size: new Vector2(120, 40),
+                        },
+                    );
+
+                    UI.Button(
+                        'Fullscreen',
+                        () => {
+                            this.ToggleFullscreen();
+                        },
+                        {
+                            position: new Vector2(
+                                contentArea.position.x + (contentArea.size.x - 120) / 2,
+                                contentArea.position.y + contentArea.size.y - 40
+                            ),
+                            size: new Vector2(120, 40),
+                        },
+                    );
                 },
-            );
+            });
 
             return;
         }
@@ -302,6 +343,84 @@ export class Game {
         }
     }
 
+    private BuildPausePanelContent(): UIPanelContentItem[] {
+        const lineHeight = 32;
+        const iconSize = new Vector2(32, 32);
+        const gamepadIndex = Input.GetFirstConnectedGamepadIndex();
+        const resumeRuns: UIPanelInlineRun[] = [{ type: 'text', text: 'To resume, press ' }];
+        const restartRuns: UIPanelInlineRun[] = [{ type: 'text', text: 'To restart, press ' }];
+
+        if (gamepadIndex !== null) {
+            resumeRuns.push({
+                type: 'image',
+                image: InputIconRegistry.GetGamepadButtonImage(GamepadButton.Menu, gamepadIndex),
+                size: iconSize,
+                marginLeft: 2,
+                marginRight: 6,
+            });
+            resumeRuns.push({ type: 'text', text: 'or ' });
+
+            restartRuns.push({
+                type: 'image',
+                image: InputIconRegistry.GetGamepadButtonImage(GamepadButton.View, gamepadIndex),
+                size: iconSize,
+                marginLeft: 2,
+                marginRight: 6,
+            });
+            restartRuns.push({ type: 'text', text: 'or ' });
+        }
+
+        resumeRuns.push({
+            type: 'image',
+            image: InputIconRegistry.GetKeyboardKeyImage(KeyCode.Escape),
+            size: iconSize,
+            marginLeft: 2,
+            marginRight: 6,
+        });
+
+        restartRuns.push({
+            type: 'image',
+            image: InputIconRegistry.GetKeyboardKeyImage(KeyCode.R),
+            size: iconSize,
+            marginLeft: 2,
+            marginRight: 6,
+        });
+
+        return [
+            {
+                type: 'line',
+                align: 'left',
+                baseline: 'middle',
+                lineGap: 12,
+                runs: resumeRuns,
+            },
+            {
+                type: 'line',
+                align: 'left',
+                baseline: 'middle',
+                lineGap: 0,
+                runs: restartRuns,
+            },
+            {
+                type: 'spacer',
+                size: Math.max(0, lineHeight - 6),
+            },
+            /*{
+                type: 'custom',
+                size: new Vector2(520, 40),
+                render: (position: Vector2, size: Vector2) => {
+                    UI.Button('Resume', () => {
+                        this.isPaused = false;
+                    }, {
+                        position: new Vector2(position.x + 20, position.y + 10),
+                        size: new Vector2(120, 40),
+                        anchor: 'top-left',
+                    });
+                },
+            }*/
+        ];
+    }
+
     private ResolveEnemyEnemyEating(): void {
         for (let i = 0; i < this.enemies.length; i++) {
             const attacker = this.enemies[i];
@@ -344,8 +463,11 @@ export class Game {
             let bestScore = Number.NEGATIVE_INFINITY;
 
             if (this.HasEatingAdvantage(enemy.scoreValue, this.player.scoreValue)) {
-                const distance = this.DistanceBetween(enemy.transform.position, this.player.transform.position);
-                const desirability = 300 + (this.player.scoreValue * 2) - distance;
+                const distance = this.DistanceBetween(
+                    enemy.transform.position,
+                    this.player.transform.position,
+                );
+                const desirability = 300 + this.player.scoreValue * 2 - distance;
 
                 if (desirability > bestScore) {
                     bestScore = desirability;
@@ -362,8 +484,11 @@ export class Game {
                     continue;
                 }
 
-                const distance = this.DistanceBetween(enemy.transform.position, otherEnemy.transform.position);
-                const desirability = 250 + (otherEnemy.scoreValue * 2) - distance;
+                const distance = this.DistanceBetween(
+                    enemy.transform.position,
+                    otherEnemy.transform.position,
+                );
+                const desirability = 250 + otherEnemy.scoreValue * 2 - distance;
 
                 if (desirability > bestScore) {
                     bestScore = desirability;
@@ -372,8 +497,11 @@ export class Game {
             }
 
             for (const point of this.points) {
-                const distance = this.DistanceBetween(enemy.transform.position, point.transform.position);
-                const desirability = (point.value * 100) - distance;
+                const distance = this.DistanceBetween(
+                    enemy.transform.position,
+                    point.transform.position,
+                );
+                const desirability = point.value * 100 - distance;
 
                 if (desirability > bestScore) {
                     bestScore = desirability;
@@ -386,7 +514,7 @@ export class Game {
     }
 
     private HasEatingAdvantage(attackerScore: number, defenderScore: number): boolean {
-        return (attackerScore - defenderScore) >= this.eatScoreMargin;
+        return attackerScore - defenderScore >= this.eatScoreMargin;
     }
 
     private DistanceBetween(a: Vector2, b: Vector2): number {
@@ -512,8 +640,16 @@ export class Game {
 
     private GetRandomPosition(): Vector2 {
         return new Vector2(
-            Renderer.ViewportCenter.x + Utilities.RandomInt(-this.map.transform.scale.x * 0.5, this.map.transform.scale.x * 0.5),
-            Renderer.ViewportCenter.y + Utilities.RandomInt(-this.map.transform.scale.y * 0.5, this.map.transform.scale.y * 0.5),
+            Renderer.ViewportCenter.x +
+                Utilities.RandomInt(
+                    -this.map.transform.scale.x * 0.5,
+                    this.map.transform.scale.x * 0.5,
+                ),
+            Renderer.ViewportCenter.y +
+                Utilities.RandomInt(
+                    -this.map.transform.scale.y * 0.5,
+                    this.map.transform.scale.y * 0.5,
+                ),
         );
     }
 
