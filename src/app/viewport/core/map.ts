@@ -5,23 +5,36 @@ import { Color } from './color';
 import { Input, KeyCode } from './input/input';
 import { Renderer } from './renderer';
 
+export interface IGridOptions {
+    draw: boolean;
+    size: number;
+    width: number;
+    color: Color;
+}
+
 export class Map extends Entity {
-    public innerGridSize: number = 32;
-    public normalGridSize: number = this.innerGridSize * 3;
-    public outerGridSize: number = this.normalGridSize * 3;
-
     public drawGrid: boolean = true;
-    public drawOuterGrid: boolean = true;
-    public drawNormalGrid: boolean = true;
-    public drawInnerGrid: boolean = true;
 
-    public innerGridLineWidth: number = 1;
-    public normalGridLineWidth: number = 2;
-    public outerGridLineWidth: number = 3;
+    public readonly innerGrid: IGridOptions = {
+        draw: true,
+        size: 32,
+        width: 1,
+        color: new Color(0, 0, 0, 0.25),
+    };
 
-    public outerGridColor: Color = new Color(0, 0, 0, 0.75);
-    public normalGridColor: Color = new Color(0, 0, 0, 0.5);
-    public innerGridColor: Color = new Color(0, 0, 0, 0.25);
+    public readonly normalGrid: IGridOptions = {
+        draw: true,
+        size: this.innerGrid.size * 3,
+        width: this.innerGrid.width * 2,
+        color: new Color(0, 0, 0, 0.5),
+    };
+
+    public readonly outerGrid: IGridOptions = {
+        draw: true,
+        size: this.normalGrid.size * 3,
+        width: this.normalGrid.width * 2,
+        color: new Color(0, 0, 0, 0.75),
+    };
 
     constructor(
         position: Vector2 = Vector2.zero,
@@ -40,19 +53,23 @@ export class Map extends Entity {
             this.drawGrid = !this.drawGrid;
         }
 
-        if (Input.GetKeyDown(KeyCode.O)) {
-            this.drawOuterGrid = !this.drawOuterGrid;
+        if (Input.GetKeyDown(KeyCode.I)) {
+            this.innerGrid.draw = !this.innerGrid.draw;
         }
 
-        if (Input.GetKeyDown(KeyCode.I)) {
-            this.drawInnerGrid = !this.drawInnerGrid;
+        if (Input.GetKeyDown(KeyCode.N)) {
+            this.normalGrid.draw = !this.normalGrid.draw;
+        }
+
+        if (Input.GetKeyDown(KeyCode.O)) {
+            this.outerGrid.draw = !this.outerGrid.draw;
         }
     }
 
     public override Draw(): void {
         const position: Vector2 = new Vector2(
-            this.transform.position.x - (this.transform.scale.x / 2),
-            this.transform.position.y - (this.transform.scale.y / 2)
+            this.transform.position.x - this.transform.scale.x / 2,
+            this.transform.position.y - this.transform.scale.y / 2,
         );
 
         Renderer.FillRect(position, this.transform.scale, this.color.String);
@@ -66,45 +83,45 @@ export class Map extends Entity {
         const top = position.y - this.transform.scale.y;
         const bottom = position.y + this.transform.scale.y;
 
-        const outerSize = this.GetSafeGridSize(this.outerGridSize);
-        const normalSize = this.GetSafeGridSize(this.normalGridSize);
-        const innerSize = this.GetSafeGridSize(this.innerGridSize);
+        const outerSize = this.GetSafeGridSize(this.outerGrid.size);
+        const normalSize = this.GetSafeGridSize(this.normalGrid.size);
+        const innerSize = this.GetSafeGridSize(this.innerGrid.size);
 
-        if (this.drawInnerGrid) {
+        if (this.innerGrid.draw) {
             this.DrawGridLayer(
                 left,
                 right,
                 top,
                 bottom,
                 innerSize,
-                this.innerGridColor,
-                this.innerGridLineWidth,
-                this.drawOuterGrid ? outerSize : undefined,
+                this.innerGrid.color,
+                this.innerGrid.width,
+                this.outerGrid.draw ? outerSize : undefined,
             );
         }
 
-        if (this.drawNormalGrid) {
+        if (this.normalGrid.draw) {
             this.DrawGridLayer(
                 left,
                 right,
                 top,
                 bottom,
                 normalSize,
-                this.normalGridColor,
-                this.normalGridLineWidth,
-                this.drawOuterGrid ? outerSize : undefined,
+                this.normalGrid.color,
+                this.normalGrid.width,
+                this.outerGrid.draw ? outerSize : undefined,
             );
         }
 
-        if (this.drawOuterGrid) {
+        if (this.outerGrid.draw) {
             this.DrawGridLayer(
                 left,
                 right,
                 top,
                 bottom,
                 outerSize,
-                this.outerGridColor,
-                this.outerGridLineWidth,
+                this.outerGrid.color,
+                this.outerGrid.width,
             );
         }
     }
