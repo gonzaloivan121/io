@@ -104,7 +104,7 @@ export class Point extends Entity {
      * @memberof Point
      */
     public Recycle(position: Vector2): void {
-        this.position = position;
+        this.transform.position = position;
         this.value = Utilities.RandomInt(this.minValue, this.maxValue);
         this.lifeTime = Utilities.RandomInt(this.minLifeTime, this.maxLifeTime);
         this.color = this.ColorForValue();
@@ -143,14 +143,14 @@ export class Point extends Entity {
 
     public override Draw(): void {
         const position: Vector2 = new Vector2(
-            this.position.x - this.scale.x / 2,
-            this.position.y - this.scale.y / 2,
+            this.transform.position.x - this.transform.scale.x / 2,
+            this.transform.position.y - this.transform.scale.y / 2,
         );
 
-        Renderer.FillRect(position, this.scale, this.color.String);
+        Renderer.FillRect(position, this.transform.scale, this.color.String);
 
         const borderWidth: number = 5;
 
-        Renderer.StrokeRect(position, this.scale, this.color.Darker.String, borderWidth);
+        Renderer.StrokeRect(position, this.transform.scale, this.color.Darker.String, borderWidth);
     }
 }

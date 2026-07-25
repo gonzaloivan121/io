@@ -66,9 +66,8 @@ export class Player extends Entity {
         }
 
         const moveSpeed: number = this.speed * 350;
-        const delta: Vector2 = Vector2.Multiply(input.normalized, moveSpeed * Time.DeltaTime);
-        
-        this.position = Vector2.Add(this.position, delta);
+        const delta: Vector2 = Vector2.Multiply(input, moveSpeed * Time.DeltaTime);
+        this.transform.position = Vector2.Add(this.transform.position, delta);
 
         // Test score increase when pressing the A button on the gamepad or the Space key on the keyboard.
         if (Input.GetGamepadButton(GamepadButton.A) || Input.GetKey(KeyCode.Space)) {
@@ -80,14 +79,14 @@ export class Player extends Entity {
 
     public override Draw(): void {
         const position: Vector2 = new Vector2(
-            this.position.x - this.scale.x / 2,
-            this.position.y - this.scale.y / 2,
+            this.transform.position.x - this.transform.scale.x / 2,
+            this.transform.position.y - this.transform.scale.y / 2,
         );
 
         const borderWidth: number = 5 + (this.score * this.growth);
 
-        Renderer.FillRect(position, this.scale, this.color.String);
-        Renderer.StrokeRect(position, this.scale, this.color.Darker.String, borderWidth);
+        Renderer.FillRect(position, this.transform.scale, this.color.String);
+        Renderer.StrokeRect(position, this.transform.scale, this.color.Darker.String, borderWidth);
     }
 
     /**
@@ -123,8 +122,8 @@ export class Player extends Entity {
      * @memberof Player
      */
     public Reset(position: Vector2 = Renderer.ViewportCenter): void {
-        this.position = position;
-        this.scale = new Vector2(this.baseScale.x, this.baseScale.y);
+        this.transform.position = position;
+        this.transform.scale = new Vector2(this.baseScale.x, this.baseScale.y);
         this.score = 0;
     }
 
@@ -135,6 +134,6 @@ export class Player extends Entity {
      * @memberof Player
      */
     private UpdateScale(): void {
-        this.scale = Vector2.Multiply(this.baseScale, 1 + (this.score * this.growth));
+        this.transform.scale = Vector2.Multiply(this.baseScale, 1 + (this.score * this.growth));
     }
 }

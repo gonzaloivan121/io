@@ -63,8 +63,8 @@ export class Enemy extends Entity {
     }
 
     public Reset(position: Vector2): void {
-        this.position = position;
-        this.scale = new Vector2(this.baseScale.x, this.baseScale.y);
+        this.transform.position = position;
+        this.transform.scale = new Vector2(this.baseScale.x, this.baseScale.y);
         this.score = 0;
         this.target = null;
     }
@@ -72,27 +72,27 @@ export class Enemy extends Entity {
     public override Start(): void {}
 
     public override Update(): void {
-        const destination = this.target?.position ?? this.position;
-        const direction = Vector2.Subtract(destination, this.position);
+        const destination = this.target?.transform.position ?? this.transform.position;
+        const direction = Vector2.Subtract(destination, this.transform.position);
         const moveSpeed = this.speed * 350;
         const delta = Vector2.Multiply(direction.normalized, moveSpeed * Time.DeltaTime);
         
-        this.position = Vector2.Add(this.position, delta);
+        this.transform.position = Vector2.Add(this.transform.position, delta);
 
         this.UpdateScale();
     }
 
     public override Draw(): void {
         const position: Vector2 = new Vector2(
-            this.position.x - this.scale.x / 2,
-            this.position.y - this.scale.y / 2,
+            this.transform.position.x - this.transform.scale.x / 2,
+            this.transform.position.y - this.transform.scale.y / 2,
         );
 
-        Renderer.FillRect(position, this.scale, this.color.String);
-        Renderer.StrokeRect(position, this.scale, this.color.Darker.String);
+        Renderer.FillRect(position, this.transform.scale, this.color.String);
+        Renderer.StrokeRect(position, this.transform.scale, this.color.Darker.String);
     }
 
     private UpdateScale(): void {
-        this.scale = Vector2.Multiply(this.baseScale, 1 + this.score * this.growth);
+        this.transform.scale = Vector2.Multiply(this.baseScale, 1 + this.score * this.growth);
     }
 }

@@ -75,7 +75,7 @@ export class Camera extends Entity {
      */
     public Clamp(clampCenter: Vector2, clampScale: Vector2): void {
         const halfMap: Vector2 = Vector2.Multiply(clampScale, 0.5);
-        const halfView: Vector2 = Vector2.Multiply(this.scale, 0.5 / this.zoom);
+        const halfView: Vector2 = Vector2.Multiply(this.transform.scale, 0.5 / this.zoom);
 
         let minX: number = clampCenter.x - halfMap.x + halfView.x;
         let maxX: number = clampCenter.x + halfMap.x - halfView.x;
@@ -93,8 +93,8 @@ export class Camera extends Entity {
             maxY = clampCenter.y;
         }
 
-        this.position.x = Math.max(minX, Math.min(this.position.x, maxX));
-        this.position.y = Math.max(minY, Math.min(this.position.y, maxY));
+        this.transform.position.x = Math.max(minX, Math.min(this.transform.position.x, maxX));
+        this.transform.position.y = Math.max(minY, Math.min(this.transform.position.y, maxY));
     }
 
     /**
@@ -107,7 +107,7 @@ export class Camera extends Entity {
 
         Renderer.Translate(Renderer.ViewportCenter);
         Renderer.Scale(new Vector2(this.zoom, this.zoom));
-        Renderer.Translate(Vector2.Multiply(this.position, -1));
+        Renderer.Translate(Vector2.Multiply(this.transform.position, -1));
     }
 
     /**
@@ -123,7 +123,7 @@ export class Camera extends Entity {
     public override Start(): void {}
 
     public override Update(): void {
-        this.scale = Renderer.ViewportSize;
+        this.transform.scale = Renderer.ViewportSize;
 
         if (Input.ScrollDelta !== 0) {
             this.zoom -= Input.ScrollDelta * this.zoomSpeed * 10;
@@ -137,8 +137,7 @@ export class Camera extends Entity {
 
         const moveSpeed: number = this.speed * 350;
         const delta: Vector2 = Vector2.Multiply(input, moveSpeed * Time.DeltaTime);
-
-        this.position = Vector2.Add(this.position, delta);
+        this.transform.position = Vector2.Add(this.transform.position, delta);
 
         const rightTrigger: number = Input.GetGamepadAxis(GamepadAxis.RightTrigger);
         const leftTrigger: number = Input.GetGamepadAxis(GamepadAxis.LeftTrigger);
@@ -165,8 +164,8 @@ export class Camera extends Entity {
      */
     public ScreenToWorld(screen: Vector2): Vector2 {
         return new Vector2(
-            (screen.x - Renderer.ViewportCenter.x) / this.zoom + this.position.x,
-            (screen.y - Renderer.ViewportCenter.y) / this.zoom + this.position.y,
+            (screen.x - Renderer.ViewportCenter.x) / this.zoom + this.transform.position.x,
+            (screen.y - Renderer.ViewportCenter.y) / this.zoom + this.transform.position.y,
         );
     }
 }

@@ -51,20 +51,20 @@ export class Map extends Entity {
 
     public override Draw(): void {
         const position: Vector2 = new Vector2(
-            this.position.x - (this.scale.x / 2),
-            this.position.y - (this.scale.y / 2)
+            this.transform.position.x - (this.transform.scale.x / 2),
+            this.transform.position.y - (this.transform.scale.y / 2)
         );
 
-        Renderer.FillRect(position, this.scale, this.color.String);
+        Renderer.FillRect(position, this.transform.scale, this.color.String);
 
         if (!this.drawGrid) {
             return;
         }
 
-        const left = position.x - this.scale.x;
-        const right = position.x + this.scale.x;
-        const top = position.y - this.scale.y;
-        const bottom = position.y + this.scale.y;
+        const left = position.x - this.transform.scale.x;
+        const right = position.x + this.transform.scale.x;
+        const top = position.y - this.transform.scale.y;
+        const bottom = position.y + this.transform.scale.y;
 
         const outerSize = this.GetSafeGridSize(this.outerGridSize);
         const normalSize = this.GetSafeGridSize(this.normalGridSize);

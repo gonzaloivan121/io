@@ -61,15 +61,9 @@ export class Game {
 
     private ToggleFullscreen(): void {
         if (Screen.Fullscreen) {
-            Log.Trace(
-                'Game.HandleInput() - Screen is currently in fullscreen mode. Exiting fullscreen...',
-            );
             Screen.ExitFullscreen();
             Cursor.Show();
         } else {
-            Log.Trace(
-                'Game.HandleInput() - Screen is currently not in fullscreen mode. Entering fullscreen...',
-            );
             Screen.EnterFullscreen();
             Cursor.Hide();
         }
@@ -95,7 +89,7 @@ export class Game {
 
     private UpdateCamera(): void {
         this.camera.Follow(this.player);
-        this.camera.Clamp(this.map.position, this.map.scale);
+        this.camera.Clamp(this.map.transform.position, this.map.transform.scale);
         this.camera.Update();
     }
 
@@ -192,6 +186,10 @@ export class Game {
     }
 
     private DrawUI(): void {
+        if (this.isPaused) {
+            UI.Backdrop();
+        }
+
         UI.Button('Restart', this.Restart.bind(this), {
             position: new Vector2(-20, 20),
             size: new Vector2(120, 40),
@@ -207,9 +205,9 @@ export class Game {
         });
 
         UI.Button(
-            'Pause',
+            this.isPaused ? 'Resume' : 'Pause',
             () => {
-                this.isPaused = true;
+                this.isPaused = !this.isPaused;
             },
             {
                 position: new Vector2(-20, 140),
@@ -219,8 +217,6 @@ export class Game {
         );
 
         if (this.isPaused) {
-            UI.Backdrop();
-
             UI.Panel(
                 'Game Paused',
                 'Press ESC, Menu or Start to resume\nPress R, View or Select to restart',
@@ -348,7 +344,7 @@ export class Game {
             let bestScore = Number.NEGATIVE_INFINITY;
 
             if (this.HasEatingAdvantage(enemy.scoreValue, this.player.scoreValue)) {
-                const distance = this.DistanceBetween(enemy.position, this.player.position);
+                const distance = this.DistanceBetween(enemy.transform.position, this.player.transform.position);
                 const desirability = 300 + (this.player.scoreValue * 2) - distance;
 
                 if (desirability > bestScore) {
@@ -366,7 +362,7 @@ export class Game {
                     continue;
                 }
 
-                const distance = this.DistanceBetween(enemy.position, otherEnemy.position);
+                const distance = this.DistanceBetween(enemy.transform.position, otherEnemy.transform.position);
                 const desirability = 250 + (otherEnemy.scoreValue * 2) - distance;
 
                 if (desirability > bestScore) {
@@ -376,7 +372,7 @@ export class Game {
             }
 
             for (const point of this.points) {
-                const distance = this.DistanceBetween(enemy.position, point.position);
+                const distance = this.DistanceBetween(enemy.transform.position, point.transform.position);
                 const desirability = (point.value * 100) - distance;
 
                 if (desirability > bestScore) {
@@ -442,8 +438,8 @@ export class Game {
 
     private CreatePlayer(): Player {
         const position: Vector2 = new Vector2(
-            Utilities.Random(0, this.map.scale.x),
-            Utilities.Random(0, this.map.scale.y),
+            Utilities.Random(0, this.map.transform.scale.x),
+            Utilities.Random(0, this.map.transform.scale.y),
         );
         const rotation: number = 0;
         const scale: Vector2 = new Vector2(64, 64);
@@ -516,8 +512,8 @@ export class Game {
 
     private GetRandomPosition(): Vector2 {
         return new Vector2(
-            Renderer.ViewportCenter.x + Utilities.RandomInt(-this.map.scale.x * 0.5, this.map.scale.x * 0.5),
-            Renderer.ViewportCenter.y + Utilities.RandomInt(-this.map.scale.y * 0.5, this.map.scale.y * 0.5),
+            Renderer.ViewportCenter.x + Utilities.RandomInt(-this.map.transform.scale.x * 0.5, this.map.transform.scale.x * 0.5),
+            Renderer.ViewportCenter.y + Utilities.RandomInt(-this.map.transform.scale.y * 0.5, this.map.transform.scale.y * 0.5),
         );
     }
 

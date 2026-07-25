@@ -4,6 +4,7 @@ import { Color } from "./color";
 import { Input } from "./input/input";
 import { IBoundingBox } from "./bounding-box";
 import { Transform } from "./transform";
+import { UUID } from "./uuid";
 
 /**
  * Represents an abstract entity in the viewport.
@@ -14,35 +15,21 @@ import { Transform } from "./transform";
  * It provides basic functionality for movement, collision detection, and rendering.
  */
 export abstract class Entity {
-    // public transform: Transform = new Transform();
-
     /**
-     * The position of the `Entity` in the viewport.
-     *
-     * This is a `Vector2` representing the `x` and `y` coordinates of the `Entity`.
-     *
-     * @type {Vector2}
-     * @memberof Entity
-     */
-    public position: Vector2;
+     * The unique identifier of the `Entity`.
+    *
+    * @type {UUID}
+    * @memberof Entity
+    */
+   public readonly id: UUID;
 
-    /**
-     * The rotation of the `Entity` in degrees.
-     *
-     * @type {number}
-     * @memberof Entity
-     */
-    public rotation: number;
-
-    /**
-     * The scale of the `Entity`.
-     *
-     * This is a `Vector2` representing the `x` and `y` scaling factors of the `Entity`.
-     *
-     * @type {Vector2}
-     * @memberof Entity
-     */
-    public scale: Vector2;
+   /**
+    * The `Transform` of the `Entity`, which defines its position, rotation, and scale in 2D space.
+    *
+    * @type {Transform}
+    * @memberof Entity
+    */
+   public readonly transform: Transform;
 
     /**
      * The speed of the `Entity`.
@@ -74,14 +61,14 @@ export abstract class Entity {
      * @memberof Entity
      */
     public get bounds(): IBoundingBox {
-        const halfWidth = this.scale.x / 2;
-        const halfHeight = this.scale.y / 2;
+        const halfWidth = this.transform.scale.x / 2;
+        const halfHeight = this.transform.scale.y / 2;
 
         return {
-            left: this.position.x - halfWidth,
-            right: this.position.x + halfWidth,
-            top: this.position.y - halfHeight,
-            bottom: this.position.y + halfHeight,
+            left: this.transform.position.x - halfWidth,
+            right: this.transform.position.x + halfWidth,
+            top: this.transform.position.y - halfHeight,
+            bottom: this.transform.position.y + halfHeight,
         };
     }
 
@@ -121,9 +108,10 @@ export abstract class Entity {
         speed: number = 1,
         color: Color = Color.White,
     ) {
-        this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
+        this.id = crypto.randomUUID();
+
+        this.transform = new Transform(position, rotation, scale);
+
         this.speed = speed;
         this.color = color;
 
@@ -156,7 +144,7 @@ export abstract class Entity {
      * @memberof Entity
      */
     public Follow(other: Entity, smooth: boolean = true): void {
-        this.FollowPosition(other.position, smooth);
+        this.FollowPosition(other.transform.position, smooth);
     }
 
     /**
@@ -171,9 +159,9 @@ export abstract class Entity {
      */
     public FollowPosition(position: Vector2, smooth: boolean = true): void {
         if (smooth) {
-            this.position = Vector2.Lerp(this.position, position, this.speed * Time.DeltaTime);
+            this.transform.position = Vector2.Lerp(this.transform.position, position, this.speed * Time.DeltaTime);
         } else {
-            this.position = position;
+            this.transform.position = position;
         }
     }
 
@@ -197,10 +185,10 @@ export abstract class Entity {
         const minY = otherBox.top + (thisBox.bottom - thisBox.top) / 2;
         const maxY = otherBox.bottom - (thisBox.bottom - thisBox.top) / 2;
 
-        const clampedX = Math.max(minX, Math.min(this.position.x, maxX));
-        const clampedY = Math.max(minY, Math.min(this.position.y, maxY));
+        const clampedX = Math.max(minX, Math.min(this.transform.position.x, maxX));
+        const clampedY = Math.max(minY, Math.min(this.transform.position.y, maxY));
 
-        this.position = new Vector2(clampedX, clampedY);
+        this.transform.position = new Vector2(clampedX, clampedY);
     }
 
     /**
