@@ -168,7 +168,7 @@ export class UI {
         const hovered =
             enabled && UIUtilities.IsPointInsideRect(Input.MousePosition, position, size);
         const pressed = hovered && Input.GetMouseButton(MouseButton.Left);
-        const clicked = hovered && enabled && Input.GetMouseButtonDown(MouseButton.Left);
+        const clicked = hovered && enabled && Input.GetMouseButtonUp(MouseButton.Left);
 
         const fillStyle = !enabled
             ? this.theme.buttonDisabledBackground
