@@ -161,9 +161,11 @@ export class Renderer {
             );
         }
 
-        Log.Trace('Renderer.Initialize() - Renderer is not initialized. Proceeding with initialization...');
+        Log.Trace(
+            'Renderer.Initialize() - Renderer is not initialized. Proceeding with initialization...',
+        );
         Log.Trace('Renderer.Initialize() - Checking canvas context...');
-        
+
         if (!context) {
             throw new InvalidArgumentError(
                 'Invalid canvas context provided for Renderer initialization. Please ensure that a valid CanvasRenderingContext2D is passed to Renderer.Initialize().',
@@ -171,12 +173,14 @@ export class Renderer {
         }
 
         Log.Trace('Renderer.Initialize() - Canvas context provided.');
-        
+
         this.context = context;
         Log.Trace('Renderer.Initialize() - Canvas context set for Renderer.');
 
         this.context.imageSmoothingEnabled = true;
-        Log.Trace('Renderer.Initialize() - Canvas context configured with imageSmoothingEnabled = true.');
+        Log.Trace(
+            'Renderer.Initialize() - Canvas context configured with imageSmoothingEnabled = true.',
+        );
 
         this.Resize();
         Log.Trace('Renderer.Initialize() - Renderer resized to match current window size.');
@@ -381,30 +385,21 @@ export class Renderer {
      *
      * @static
      * @param {CanvasImageSource} image - The image to draw on the canvas.
-     * @param {number} x - The x-coordinate of the upper-left corner of the rectangle.
-     * @param {number} y - The y-coordinate of the upper-left corner of the rectangle.
+     * @param {Vector2} position - The position of the upper-left corner of the rectangle.
      * @memberof Renderer
      */
-    static DrawImage(image: CanvasImageSource, x: number, y: number): void;
+    static DrawImage(image: CanvasImageSource, position: Vector2): void;
 
     /**
      * Draws an image on the canvas at the specified coordinates with the given dimensions.
      *
      * @static
      * @param {CanvasImageSource} image - The image to draw on the canvas.
-     * @param {number} x - The x-coordinate of the upper-left corner of the rectangle where the image will be drawn.
-     * @param {number} y - The y-coordinate of the upper-left corner of the rectangle where the image will be drawn.
-     * @param {number} width - The width to draw the image. This will stretch or shrink the image to fit the specified width.
-     * @param {number} height - The height to draw the image. This will stretch or shrink the image to fit the specified height.
+     * @param {Vector2} position - The position of the upper-left corner of the rectangle where the image will be drawn.
+     * @param {Vector2} size - The size to draw the image. This will stretch or shrink the image to fit the specified dimensions.
      * @memberof Renderer
      */
-    static DrawImage(
-        image: CanvasImageSource,
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-    ): void;
+    static DrawImage(image: CanvasImageSource, position: Vector2, size: Vector2): void;
 
     /**
      * Draws a portion of an image on the canvas at the specified coordinates with the given dimensions.
@@ -413,56 +408,48 @@ export class Renderer {
      *
      * @static
      * @param {CanvasImageSource} image - The image to draw on the canvas.
-     * @param {number} sx - The x-coordinate of the upper-left corner of the source rectangle within the image.
-     * @param {number} sy - The y-coordinate of the upper-left corner of the source rectangle within the image.
-     * @param {number} sw - The width of the source rectangle within the image.
-     * @param {number} sh - The height of the source rectangle within the image.
-     * @param {number} dx - The x-coordinate of the upper-left corner of the destination rectangle on the canvas where the image will be drawn.
-     * @param {number} dy - The y-coordinate of the upper-left corner of the destination rectangle on the canvas where the image will be drawn.
-     * @param {number} dw - The width to draw the image on the canvas. This will stretch or shrink the image to fit the specified width of the destination rectangle.
-     * @param {number} dh - The height to draw the image on the canvas. This will stretch or shrink the image to fit the specified height of the destination rectangle.
+     * @param {Vector2} sourcePosition - The position of the upper-left corner of the source rectangle within the image.
+     * @param {Vector2} sourceSize - The size of the source rectangle within the image.
+     * @param {Vector2} destinationPosition - The position of the upper-left corner of the destination rectangle on the canvas where the image will be drawn.
+     * @param {Vector2} destinationSize - The size to draw the image on the canvas. This will stretch or shrink the image to fit the specified dimensions of the destination rectangle.
      * @memberof Renderer
      */
     static DrawImage(
         image: CanvasImageSource,
-        sx: number,
-        sy: number,
-        sw: number,
-        sh: number,
-        dx: number,
-        dy: number,
-        dw: number,
-        dh: number,
+        sourcePosition: Vector2,
+        sourceSize: Vector2,
+        destinationPosition: Vector2,
+        destinationSize: Vector2,
     ): void;
-    static DrawImage(image: CanvasImageSource, ...args: number[]): void {
-        if (args.length !== 2 && args.length !== 4 && args.length !== 8) {
+    static DrawImage(image: CanvasImageSource, ...args: Vector2[]): void {
+        if (args.length !== 1 && args.length !== 2 && args.length !== 4) {
             throw new InvalidArgumentError(
-                'Invalid DrawImage arguments. Expected 2, 4, or 8 numeric arguments.',
+                'Invalid DrawImage arguments. Expected 1, 2, or 4 Vector2 arguments.',
             );
         }
 
         const ctx = this.GetContext();
 
-        if (args.length === 2) {
-            ctx.drawImage(image, args[0], args[1]);
+        if (args.length === 1) {
+            ctx.drawImage(image, args[0].x, args[0].y);
             return;
         }
 
-        if (args.length === 4) {
-            ctx.drawImage(image, args[0], args[1], args[2], args[3]);
+        if (args.length === 2) {
+            ctx.drawImage(image, args[0].x, args[0].y, args[1].x, args[1].y);
             return;
         }
 
         ctx.drawImage(
             image,
-            args[0],
-            args[1],
-            args[2],
-            args[3],
-            args[4],
-            args[5],
-            args[6],
-            args[7],
+            args[0].x,
+            args[0].y,
+            args[1].x,
+            args[1].y,
+            args[2].x,
+            args[2].y,
+            args[3].x,
+            args[3].y,
         );
     }
 
@@ -470,8 +457,7 @@ export class Renderer {
      * Draws a circle at the specified coordinates with the given radius, fill style, and optional stroke style and line width.
      *
      * @static
-     * @param {number} x - The x-coordinate of the center of the circle.
-     * @param {number} y - The y-coordinate of the center of the circle.
+     * @param {Vector2} position - The position of the center of the circle.
      * @param {number} radius - The radius of the circle.
      * @param {FillStyle} fillStyle - The fill style to use for the circle (e.g., a color string, gradient, or pattern).
      * @param {StrokeStyle} [strokeStyle] - Optional stroke style to use for the circle's outline (e.g., a color string, gradient, or pattern). If not provided, the circle will not be stroked.
@@ -1063,7 +1049,7 @@ export class Renderer {
      * @memberof Renderer
      */
     static DrawImageScaled(image: CanvasImageSource, position: Vector2, size: Vector2): void {
-        this.DrawImage(image, position.x, position.y, size.x, size.y);
+        this.DrawImage(image, position, size);
     }
 
     /**
@@ -1071,28 +1057,26 @@ export class Renderer {
      *
      * @static
      * @param {CanvasImageSource} image - The image to draw on the canvas. This can be an HTMLImageElement, HTMLCanvasElement, or HTMLVideoElement.
-     * @param {number} sx - The x-coordinate of the top-left corner of the source rectangle.
-     * @param {number} sy - The y-coordinate of the top-left corner of the source rectangle.
-     * @param {number} sw - The width of the source rectangle.
-     * @param {number} sh - The height of the source rectangle.
-     * @param {number} dx - The x-coordinate of the top-left corner of the destination rectangle on the canvas.
-     * @param {number} dy - The y-coordinate of the top-left corner of the destination rectangle on the canvas.
-     * @param {number} dw - The width of the destination rectangle on the canvas.
-     * @param {number} dh - The height of the destination rectangle on the canvas.
+     * @param {Vector2} sourcePosition - The position of the upper-left corner of the source rectangle within the image to be cropped and drawn.
+     * @param {Vector2} sourceSize - The size of the source rectangle within the image to be cropped and drawn.
+     * @param {Vector2} destinationPosition - The position of the upper-left corner where the cropped image should be drawn on the canvas.
+     * @param {Vector2} destinationSize - The size to draw the cropped image on the canvas. The cropped area will be scaled to fit this size.
      * @memberof Renderer
      */
     static DrawImageCropped(
         image: CanvasImageSource,
-        sx: number,
-        sy: number,
-        sw: number,
-        sh: number,
-        dx: number,
-        dy: number,
-        dw: number,
-        dh: number,
+        sourcePosition: Vector2,
+        sourceSize: Vector2,
+        destinationPosition: Vector2,
+        destinationSize: Vector2,
     ): void {
-        this.DrawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+        this.DrawImage(
+            image,
+            sourcePosition,
+            sourceSize,
+            destinationPosition,
+            destinationSize,
+        );
     }
 
     /**

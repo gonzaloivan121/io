@@ -74,6 +74,22 @@ export interface UIButton {
     strokeStyle?: StrokeStyle;
 
     /**
+     * The stroke style of the button when the mouse is hovering over it, which can be a color string, a CanvasGradient, or a CanvasPattern.
+     *
+     * @type {StrokeStyle}
+     * @memberof UIButton
+     */
+    hoverStrokeStyle?: StrokeStyle;
+
+    /**
+     * The stroke style of the button when it is pressed, which can be a color string, a CanvasGradient, or a CanvasPattern.
+     *
+     * @type {StrokeStyle}
+     * @memberof UIButton
+     */
+    pressedStrokeStyle?: StrokeStyle;
+
+    /**
      * The text color of the button's label, which can be a color string, a CanvasGradient, or a CanvasPattern.
      *
      * @type {FillStyle}

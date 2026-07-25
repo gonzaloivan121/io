@@ -54,7 +54,7 @@ export interface UITheme {
      * @type {FillStyle}
      * @memberof UITheme
      */
-    buttonBackground: FillStyle;
+    buttonBackgroundColor: FillStyle;
 
     /**
      * The fill style of the button background when the mouse is hovering over it, which can be a color string, a CanvasGradient, or a CanvasPattern.
@@ -62,7 +62,7 @@ export interface UITheme {
      * @type {FillStyle}
      * @memberof UITheme
      */
-    buttonHoverBackground: FillStyle;
+    buttonHoverBackgroundColor: FillStyle;
 
     /**
      * The fill style of the button background when it is pressed, which can be a color string, a CanvasGradient, or a CanvasPattern.
@@ -70,7 +70,7 @@ export interface UITheme {
      * @type {FillStyle}
      * @memberof UITheme
      */
-    buttonPressedBackground: FillStyle;
+    buttonPressedBackgroundColor: FillStyle;
 
     /**
      * The fill style of the button background when it is disabled, which can be a color string, a CanvasGradient, or a CanvasPattern.
@@ -78,7 +78,39 @@ export interface UITheme {
      * @type {FillStyle}
      * @memberof UITheme
      */
-    buttonDisabledBackground: FillStyle;
+    buttonDisabledBackgroundColor: FillStyle;
+
+    /**
+     * The stroke style of the button border, which can be a color string, a CanvasGradient, or a CanvasPattern.
+     *
+     * @type {StrokeStyle}
+     * @memberof UITheme
+     */
+    buttonBorderColor: StrokeStyle;
+
+    /**
+     * The stroke style of the button border when the mouse is hovering over it, which can be a color string, a CanvasGradient, or a CanvasPattern.
+     *
+     * @type {StrokeStyle}
+     * @memberof UITheme
+     */
+    buttonHoverBorderColor: StrokeStyle;
+
+    /**
+     * The stroke style of the button border when it is pressed, which can be a color string, a CanvasGradient, or a CanvasPattern.
+     *
+     * @type {StrokeStyle}
+     * @memberof UITheme
+     */
+    buttonPressedBorderColor: StrokeStyle;
+
+    /**
+     * The stroke style of the button border when it is disabled, which can be a color string, a CanvasGradient, or a CanvasPattern.
+     *
+     * @type {StrokeStyle}
+     * @memberof UITheme
+     */
+    buttonDisabledBorderColor: StrokeStyle;
 
     /**
      * The fill style of the button text, which can be a color string, a CanvasGradient, or a CanvasPattern.

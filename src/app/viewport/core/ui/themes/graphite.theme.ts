@@ -1,0 +1,33 @@
+import { Vector2 } from "@xloxlolex/vector-math";
+import { UITheme } from "../interfaces/ui-theme.interface";
+
+export const GraphiteTheme: UITheme = {
+    backdropBackground: 'rgba(17, 24, 39, 0.5)',
+    panelBackground: 'rgba(31, 41, 55, 0.96)',
+    panelBorder: 'rgba(148, 163, 184, 0.48)',
+    panelTitleColor: '#f9fafb',
+    panelTextColor: '#d1d5db',
+    buttonBackgroundColor: '#374151',
+    buttonHoverBackgroundColor: '#4b5563',
+    buttonPressedBackgroundColor: '#1f2937',
+    buttonDisabledBackgroundColor: '#111827',
+    buttonBorderColor: '#4b5563',
+    buttonHoverBorderColor: '#6b7280',
+    buttonPressedBorderColor: '#374151',
+    buttonDisabledBorderColor: '#1f2937',
+    buttonTextColor: '#f3f4f6',
+    buttonDisabledTextColor: '#9ca3af',
+    accentColor: '#60a5fa',
+    shadowColor: 'rgba(3, 7, 18, 0.3)',
+    panelRadius: 0,
+    buttonRadius: 2,
+    borderWidth: 1,
+    padding: new Vector2(16, 16),
+    titleFont: '600 18px Segoe UI',
+    bodyFont: '14px Segoe UI',
+    buttonFont: '600 14px Segoe UI',
+    shadowBlur: 12,
+    shadowOffset: new Vector2(0, 4),
+    textAlign: 'left',
+    textBaseline: 'top',
+};

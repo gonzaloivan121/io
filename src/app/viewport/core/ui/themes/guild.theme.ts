@@ -1,0 +1,33 @@
+import { Vector2 } from "@xloxlolex/vector-math";
+import { UITheme } from "../interfaces/ui-theme.interface";
+
+export const GuildTheme: UITheme = {
+    backdropBackground: 'rgba(15, 18, 24, 0.58)',
+    panelBackground: 'rgba(35, 39, 47, 0.96)',
+    panelBorder: 'rgba(139, 92, 246, 0.34)',
+    panelTitleColor: '#f5f3ff',
+    panelTextColor: '#d4d4d8',
+    buttonBackgroundColor: '#5865f2',
+    buttonHoverBackgroundColor: '#7380ff',
+    buttonPressedBackgroundColor: '#4752c4',
+    buttonDisabledBackgroundColor: '#52525b',
+    buttonBorderColor: '#5865f2',
+    buttonHoverBorderColor: '#7380ff',
+    buttonPressedBorderColor: '#4752c4',
+    buttonDisabledBorderColor: '#3f3f46',
+    buttonTextColor: '#faf5ff',
+    buttonDisabledTextColor: '#c4b5fd',
+    accentColor: '#a78bfa',
+    shadowColor: 'rgba(15, 18, 24, 0.48)',
+    panelRadius: 20,
+    buttonRadius: 14,
+    borderWidth: 2,
+    padding: new Vector2(16, 16),
+    titleFont: '700 18px Trebuchet MS',
+    bodyFont: '14px Verdana',
+    buttonFont: '700 14px Trebuchet MS',
+    shadowBlur: 20,
+    shadowOffset: new Vector2(0, 8),
+    textAlign: 'left',
+    textBaseline: 'top',
+};

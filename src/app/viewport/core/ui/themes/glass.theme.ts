@@ -1,0 +1,33 @@
+import { Vector2 } from "@xloxlolex/vector-math";
+import { UITheme } from "../interfaces/ui-theme.interface";
+
+export const GlassTheme: UITheme = {
+    backdropBackground: 'rgba(15, 23, 42, 0.22)',
+    panelBackground: 'rgba(255, 255, 255, 0.76)',
+    panelBorder: 'rgba(255, 255, 255, 0.46)',
+    panelTitleColor: '#0f172a',
+    panelTextColor: '#334155',
+    buttonBackgroundColor: '#0ea5e9',
+    buttonHoverBackgroundColor: '#38bdf8',
+    buttonPressedBackgroundColor: '#0284c7',
+    buttonDisabledBackgroundColor: '#cbd5e1',
+    buttonBorderColor: '#0284c7',
+    buttonHoverBorderColor: '#0ea5e9',
+    buttonPressedBorderColor: '#0369a1',
+    buttonDisabledBorderColor: '#94a3b8',
+    buttonTextColor: '#f8fafc',
+    buttonDisabledTextColor: '#64748b',
+    accentColor: '#7dd3fc',
+    shadowColor: 'rgba(15, 23, 42, 0.16)',
+    panelRadius: 24,
+    buttonRadius: 18,
+    borderWidth: 1,
+    padding: new Vector2(20, 20),
+    titleFont: '600 18px Segoe UI',
+    bodyFont: '14px Segoe UI',
+    buttonFont: '600 14px Segoe UI',
+    shadowBlur: 28,
+    shadowOffset: new Vector2(0, 12),
+    textAlign: 'left',
+    textBaseline: 'top',
+};

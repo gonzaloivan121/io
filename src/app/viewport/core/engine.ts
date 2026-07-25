@@ -6,6 +6,7 @@ import { InvalidArgumentError } from '../../errors';
 import { Input } from './input/input';
 import { Log } from './log/log';
 import { Network } from './network/network';
+import { UI } from './ui/ui';
 
 /**
  * Represents the core engine of the application, responsible for managing the game loop, rendering, and timing.
@@ -63,9 +64,10 @@ export class Engine {
         }
 
         Log.Trace('Engine.Initialize() - 2D context obtained from canvas.');
-        Log.Trace('Engine.Initialize() - Initializing Renderer, Input, and Network  ...');
+        Log.Trace('Engine.Initialize() - Initializing Renderer, UI, Input, and Network  ...');
 
         Renderer.Initialize(context);
+        UI.Initialize();
         Input.Initialize();
         Network.Initialize();
 
@@ -132,9 +134,10 @@ export class Engine {
 
         this.Stop();
 
-        Log.Trace('Engine.Shutdown() - Shutting down Renderer, Input, and Network...');
+        Log.Trace('Engine.Shutdown() - Shutting down Renderer, UI, Input, and Network...');
 
         Renderer.Shutdown();
+        UI.Shutdown();
         Input.Shutdown();
         Network.Shutdown();
 
@@ -194,10 +197,36 @@ export class Engine {
      * @memberof Engine
      */
     public static LoadImage(source: string): CanvasImageSource {
+        this.EnsureSource(source);
+
         const image: CanvasImageSource = new Image();
         image.src = source;
 
         return image;
+    }
+
+    /**
+     * Loads multiple images from an array of source URLs.
+     * 
+     * This method iterates over the provided array of image source URLs,
+     * loads each image using the `LoadImage` method, and returns an array of loaded images.
+     * 
+     * The loaded images can then be used for drawing on the canvas or for other purposes in the application.
+     *
+     * @static
+     * @param {string[]} sources - An array of image source URLs to load.
+     * @returns {CanvasImageSource[]} An array of loaded images as CanvasImageSource objects.
+     * @memberof Engine
+     */
+    public static LoadImages(sources: string[]): CanvasImageSource[] {
+        const images: CanvasImageSource[] = [];
+
+        for (const source of sources) {
+            const image: CanvasImageSource = this.LoadImage(source);
+            images.push(image);
+        }
+
+        return images;
     }
 
     /**
@@ -232,5 +261,20 @@ export class Engine {
         video.src = source;
 
         return video;
+    }
+
+    /**
+     * Ensures that the provided source string is valid.
+     *
+     * @private
+     * @static
+     * @param {string} source - The source string to validate.
+     * @throws {InvalidArgumentError} If the source is not provided or is not a string.
+     * @memberof Engine
+     */
+    private static EnsureSource(source: string): void {
+        if (!source || source.trim() === '' || typeof source !== 'string') {
+            throw new InvalidArgumentError('Source must be provided and must be a string.');
+        }
     }
 }

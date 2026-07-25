@@ -3,6 +3,101 @@ import { UIAnchor } from "../types/ui-anchor.type";
 import { FillStyle, StrokeStyle } from "../../renderer";
 
 /**
+ * Inline text fragment used inside rich panel content lines.
+ *
+ * @export
+ * @interface UIPanelInlineTextRun
+ */
+export interface UIPanelInlineTextRun {
+    type: 'text';
+    text: string;
+    color?: FillStyle;
+    font?: string;
+}
+
+/**
+ * Inline image fragment used inside rich panel content lines.
+ *
+ * @export
+ * @interface UIPanelInlineImageRun
+ */
+export interface UIPanelInlineImageRun {
+    type: 'image';
+    image: CanvasImageSource;
+    size: Vector2;
+    yOffset?: number;
+    marginLeft?: number;
+    marginRight?: number;
+}
+
+/**
+ * Union type for inline runs rendered inside a single panel content line.
+ *
+ * @export
+ */
+export type UIPanelInlineRun = UIPanelInlineTextRun | UIPanelInlineImageRun;
+
+/**
+ * Rich content line that supports mixed text and inline images.
+ *
+ * @export
+ * @interface UIPanelLineContent
+ */
+export interface UIPanelLineContent {
+    type: 'line';
+    runs: UIPanelInlineRun[];
+    align?: CanvasTextAlign;
+    baseline?: CanvasTextBaseline;
+    lineGap?: number;
+}
+
+/**
+ * Custom content block that can render any UI element within the panel body.
+ *
+ * @export
+ * @interface UIPanelCustomContent
+ */
+export interface UIPanelCustomContent {
+    type: 'custom';
+    size: Vector2;
+    marginBottom?: number;
+    render: (position: Vector2, size: Vector2) => void;
+}
+
+/**
+ * Vertical spacer used to create additional separation between panel content blocks.
+ *
+ * @export
+ * @interface UIPanelSpacerContent
+ */
+export interface UIPanelSpacerContent {
+    type: 'spacer';
+    size: number;
+}
+
+/**
+ * Supported rich panel content items.
+ *
+ * @export
+ */
+export type UIPanelContentItem =
+    | string
+    | UIPanelLineContent
+    | UIPanelCustomContent
+    | UIPanelSpacerContent;
+
+/**
+ * The drawable area inside a panel, below the title and separator.
+ *
+ * @export
+ * @interface UIPanelContentArea
+ */
+export interface UIPanelContentArea {
+    position: Vector2;
+    size: Vector2;
+}
+
+/**
  * Interface defining the options for rendering a panel in the `UI` system.
  *
  * @export
@@ -136,4 +231,19 @@ export interface UIPanel {
      * @memberof UIPanel
      */
     lineGap?: number;
+
+    /**
+     * Rich panel content blocks.
+     *
+     * @type {UIPanelContentItem[]}
+     * @memberof UIPanel
+     */
+    content?: UIPanelContentItem[];
+
+    /**
+     * Optional callback to draw arbitrary UI elements inside the panel body area.
+     *
+     * @memberof UIPanel
+     */
+    onDrawContent?: (contentArea: UIPanelContentArea) => void;
 }
