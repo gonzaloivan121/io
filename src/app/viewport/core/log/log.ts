@@ -1,4 +1,5 @@
 import { InvalidArgumentError } from '../../../errors';
+import { LEVEL_STYLES } from './level-styles';
 import { LogLevel } from './log-level';
 
 /**
@@ -19,34 +20,18 @@ export class Log {
     private static currentLevel: LogLevel = LogLevel.Trace;
 
     /**
-     * The styles associated with each log level for console output.
-     *
-     * @private
-     * @static
-     * @type {Record<LogLevel, string>}
-     * @memberof Log
-     */
-    private static readonly LEVEL_STYLES: Record<LogLevel, string> = {
-        [LogLevel.Trace]:   'color: #999999; font-weight: bold;',
-        [LogLevel.Debug]:   'color: #40BF59; font-weight: bold;',
-        [LogLevel.Info]:    'color: #3399E6; font-weight: bold;',
-        [LogLevel.Warn]:    'color: #F2A626; font-weight: bold;',
-        [LogLevel.Error]:   'color: #D94040; font-weight: bold;',
-        [LogLevel.Fatal]:   'color: #A62626; font-weight: bold;',
-    };
-
-    /**
      * Initializes the logging system.
      *
      * @static
      * @memberof Log
      */
     public static Initialize(): void {
-        Log.Info('Log.Initialize() - Initializing Log...');
+        this.Info('Log.Initialize() - Initializing Log...');
 
         // Additional initialization logic can be added here if needed.
+        this.SetLogLevel(LogLevel.Info);
 
-        Log.Trace('Log.Initialize() - Log initialized successfully.');
+        this.Trace('Log.Initialize() - Log initialized successfully.');
     }
 
     /**
@@ -237,7 +222,7 @@ export class Log {
      */
     private static GetLevelStyles(level: LogLevel): string {
         this.EnsureLevel(level);
-        return this.LEVEL_STYLES[level];
+        return LEVEL_STYLES[level];
     }
 }
 
