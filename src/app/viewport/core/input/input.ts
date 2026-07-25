@@ -787,6 +787,69 @@ export class Input {
     }
 
     /**
+     * Returns a connected gamepad by index.
+     *
+     * @static
+     * @param {number} gamepadIndex - The gamepad index. Defaults to `0`.
+     * @returns {(Gamepad | null)} The connected gamepad, or `null` if unavailable.
+     * @memberof Input
+     */
+    public static GetGamepad(gamepadIndex: number = 0): Gamepad | null {
+        return this.gamepads[gamepadIndex] ?? null;
+    }
+
+    /**
+     * Returns the browser-reported gamepad identifier string.
+     *
+     * @static
+     * @param {number} gamepadIndex - The gamepad index. Defaults to `0`.
+     * @returns {(string | null)} The gamepad id string, or `null`.
+     * @memberof Input
+     */
+    public static GetGamepadId(gamepadIndex: number = 0): string | null {
+        return this.GetGamepad(gamepadIndex)?.id ?? null;
+    }
+
+    /**
+     * Returns the browser-reported gamepad mapping string.
+     *
+     * @static
+     * @param {number} gamepadIndex - The gamepad index. Defaults to `0`.
+     * @returns {(string | null)} The mapping string, or `null`.
+     * @memberof Input
+     */
+    public static GetGamepadMapping(gamepadIndex: number = 0): string | null {
+        return this.GetGamepad(gamepadIndex)?.mapping ?? null;
+    }
+
+    /**
+     * Returns the connected gamepad indices currently tracked by the input system.
+     *
+     * @static
+     * @returns {number[]} Sorted connected gamepad indices.
+     * @memberof Input
+     */
+    public static GetConnectedGamepadIndices(): number[] {
+        return Object.keys(this.gamepads)
+            .map((index) => Number(index))
+            .filter((index) => !Number.isNaN(index) && this.gamepads[index] !== undefined)
+            .sort((a, b) => a - b);
+    }
+
+    /**
+     * Returns the lowest connected gamepad index, if any.
+     *
+     * @static
+     * @returns {(number | null)} The first connected gamepad index, or `null`.
+     * @memberof Input
+     */
+    public static GetFirstConnectedGamepadIndex(): number | null {
+        const indices = this.GetConnectedGamepadIndices();
+
+        return indices.length > 0 ? indices[0] : null;
+    }
+
+    /**
      * Handles the gamepad connected event.
      *
      * This method is called when a gamepad is connected and adds the gamepad to the `Input`'s gamepad list.
