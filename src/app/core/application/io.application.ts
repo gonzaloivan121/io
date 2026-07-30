@@ -1,29 +1,34 @@
+import { Application } from './interfaces/application.interface';
+
 import { Vector2 } from '@xloxlolex/vector-math';
-import { Screen } from './screen';
-import { Enemy } from './enemy';
-import { Engine } from './engine';
-import { Player } from './player';
-import { Map } from './map';
-import { Point } from './point';
-import { Input, KeyCode, GamepadButton, GamepadAxis } from './input/input';
-import { Color } from './color';
-import { Camera } from './camera';
-import { Time } from './time';
+
+import { Screen } from '../engine/screen';
+import { Color } from '../engine/color';
+import { Time } from '../engine/time';
+import { Renderer } from '../engine/renderer';
+import { Cursor } from '../engine/cursor';
+
+import { Enemy } from '../enemy';
+import { Player } from '../player';
+import { Map } from '../map';
+import { Point } from '../point';
+import { Camera } from '../camera';
+import { Utilities } from '../utilities';
+
+import { UI } from '../ui/ui';
+import { UIPanelContentItem, UIPanelInlineRun } from '../ui/interfaces/ui-panel.interface';
+
+import { Input, KeyCode, GamepadButton, GamepadAxis } from '../input/input';
+import { InputIconRegistry } from '../input/input-icon-registry';
 
 import { NotInitializedError } from '../../errors';
-import { Utilities } from './utilities';
-import { Renderer } from './renderer';
-import { UI } from './ui/ui';
-import { Cursor } from './cursor';
-import { UIPanelContentItem, UIPanelInlineRun } from './ui/interfaces/ui-panel.interface';
-import { InputIconRegistry } from './input/input-icon-registry';
 
-export class Game {
-    private map: Map = this.CreateMap();
-    private player: Player = this.CreatePlayer();
-    private enemies: Enemy[] = this.CreateEnemies();
-    private camera: Camera = this.CreateCamera();
-    private points: Point[] = this.CreatePoints();
+export class IOApplication implements Application {
+    private map!: Map;
+    private player!: Player;
+    private enemies!: Enemy[];
+    private camera!: Camera;
+    private points!: Point[];
 
     private isPaused: boolean = false;
 
@@ -32,12 +37,56 @@ export class Game {
     private scoreDecayAmount: number = 1;
     private scoreDecayAccumulator: number = 0;
 
-    public Run(): void {
-        Engine.Run(() => {
-            this.HandleInput();
-            this.Update();
-            this.Draw();
-        });
+    public Initialize(): void {
+        this.map = this.CreateMap();
+        this.player = this.CreatePlayer();
+        this.enemies = this.CreateEnemies();
+        this.camera = this.CreateCamera();
+        this.points = this.CreatePoints();
+    }
+
+    public Shutdown(): void {}
+
+    public Restart(): void {
+        this.player.Reset(this.GetRandomPosition());
+
+        for (const enemy of this.enemies) {
+            enemy.Reset(this.GetRandomPosition());
+            enemy.color = this.CreateEnemyColor();
+        }
+
+        for (const point of this.points) {
+            point.Recycle(this.GetRandomPosition());
+        }
+
+        this.isPaused = false;
+    }
+
+    public Update(): void {
+        this.EnsureInitialized();
+
+        this.HandleInput();
+
+        if (this.isPaused) {
+            return;
+        }
+
+        this.UpdateCamera();
+        this.UpdateMap();
+        this.UpdatePoints();
+        this.UpdateEnemies();
+        this.UpdatePlayer();
+
+        this.CollectPoints();
+        this.HandleEating();
+        this.ApplyScoreDecay();
+    }
+
+    public Draw(): void {
+        this.EnsureInitialized();
+
+        this.DrawGameplay();
+        this.DrawUI();
     }
 
     private HandleInput(): void {
@@ -65,24 +114,6 @@ export class Game {
             Screen.EnterFullscreen();
             Cursor.Hide();
         }
-    }
-
-    private Update(): void {
-        this.EnsureInitialized();
-
-        if (this.isPaused) {
-            return;
-        }
-
-        this.UpdateCamera();
-        this.UpdateMap();
-        this.UpdatePoints();
-        this.UpdateEnemies();
-        this.UpdatePlayer();
-
-        this.CollectPoints();
-        this.HandleEating();
-        this.ApplyScoreDecay();
     }
 
     private UpdateCamera(): void {
@@ -158,13 +189,6 @@ export class Game {
         }
     }
 
-    private Draw(): void {
-        this.EnsureInitialized();
-
-        this.DrawGameplay();
-        this.DrawUI();
-    }
-
     private DrawGameplay(): void {
         this.BeginFrame();
 
@@ -234,7 +258,10 @@ export class Game {
                             this.isPaused = false;
                         },
                         {
-                            position: new Vector2(contentArea.position.x, contentArea.position.y + contentArea.size.y - 40),
+                            position: new Vector2(
+                                contentArea.position.x,
+                                contentArea.position.y + contentArea.size.y - 40,
+                            ),
                             size: new Vector2(120, 40),
                         },
                     );
@@ -247,7 +274,7 @@ export class Game {
                         {
                             position: new Vector2(
                                 contentArea.position.x + contentArea.size.x - 120,
-                                contentArea.position.y + contentArea.size.y - 40
+                                contentArea.position.y + contentArea.size.y - 40,
                             ),
                             size: new Vector2(120, 40),
                         },
@@ -261,7 +288,7 @@ export class Game {
                         {
                             position: new Vector2(
                                 contentArea.position.x + (contentArea.size.x - 120) / 2,
-                                contentArea.position.y + contentArea.size.y - 40
+                                contentArea.position.y + contentArea.size.y - 40,
                             ),
                             size: new Vector2(120, 40),
                         },
@@ -555,8 +582,7 @@ export class Game {
     }
 
     private BeginFrame(): void {
-        Engine.DrawBackground();
-
+        Renderer.Clear();
         this.camera.Begin();
     }
 
@@ -651,21 +677,6 @@ export class Game {
                     this.map.transform.scale.y * 0.5,
                 ),
         );
-    }
-
-    private Restart(): void {
-        this.player.Reset(this.GetRandomPosition());
-
-        for (const enemy of this.enemies) {
-            enemy.Reset(this.GetRandomPosition());
-            enemy.color = this.CreateEnemyColor();
-        }
-
-        for (const point of this.points) {
-            point.Recycle(this.GetRandomPosition());
-        }
-
-        this.isPaused = false;
     }
 
     private CreateEnemyColor(): Color {

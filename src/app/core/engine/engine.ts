@@ -1,12 +1,14 @@
-import { Vector2 } from '@xloxlolex/vector-math';
+import { Application } from '../application/interfaces/application.interface';
+
 import { Time } from './time';
-import { Color } from './color';
 import { Renderer } from './renderer';
+
+import { Input } from '../input/input';
+import { Log } from '../log/log';
+import { Network } from '../network/network';
+import { UI } from '../ui/ui';
+
 import { InvalidArgumentError } from '../../errors';
-import { Input } from './input/input';
-import { Log } from './log/log';
-import { Network } from './network/network';
-import { UI } from './ui/ui';
 
 /**
  * Represents the core engine of the application, responsible for managing the game loop, rendering, and timing.
@@ -17,14 +19,47 @@ import { UI } from './ui/ui';
  */
 export class Engine {
     /**
-     * The interval ID for the game loop.
-     * This is used to clear the interval when stopping the game loop.
+     * Indicates whether the engine has been initialized.
+     *
+     * @private
+     * @static
+     * @type {boolean}
+     * @memberof Engine
+     */
+    private static initialized: boolean = false;
+
+    /**
+     * Indicates whether the engine is currently running.
+     *
+     * @private
+     * @static
+     * @type {boolean}
+     * @memberof Engine
+     */
+    private static running: boolean = false;
+
+    /**
+     * The animation frame ID for the game loop.
+     * 
+     * This is used to cancel the animation frame when stopping the game loop.
      *
      * @static
      * @type {number}
      * @memberof Engine
      */
-    private static intervalId: number;
+    private static animationFrameId: number;
+
+    /**
+     * The `Application` instance that the engine will run.
+     * 
+     * This instance is responsible for the game logic, including initialization, updating, and drawing.
+     *
+     * @private
+     * @static
+     * @type {Application}
+     * @memberof Engine
+     */
+    private static application: Application;
 
     /**
      * Initializes the engine with the specified canvas element.
@@ -32,13 +67,31 @@ export class Engine {
      *
      * @static
      * @param {HTMLCanvasElement} canvas - The HTML canvas element to be used for rendering the viewport.
-     * @throws {InvalidArgumentError} If the canvas element or the 2D context is not provided or is invalid.
+     * @param {Application} application - The `Application` instance to be run by the engine.
+     * @throws {InvalidArgumentError} If the application instance, the canvas element or the 2D context are not provided or are invalid.
      * @memberof Engine
      */
-    public static Initialize(canvas: HTMLCanvasElement): void {
+    public static Initialize(canvas: HTMLCanvasElement, application: Application): void {
+        if (this.initialized) {
+            Log.Warn('Engine.Initialize() - Engine is already initialized. Re-initialization is not allowed.');
+            return;
+        }
+
         Log.Initialize();
 
         Log.Info('Engine.Initialize() - Initializing Engine...');
+        Log.Trace('Engine.Initialize() - Checking application instance...');
+
+        if (!application) {
+            throw new InvalidArgumentError(
+                'Application must be provided for Engine initialization.',
+            );
+        }
+
+        Log.Debug('Engine.Initialize() - Application instance provided.');
+        
+        this.application = application;
+
         Log.Trace('Engine.Initialize() - Checking canvas element...');
 
         if (!canvas) {
@@ -47,8 +100,7 @@ export class Engine {
             );
         }
 
-        Log.Trace('Engine.Initialize() - Canvas element provided.');
-
+        Log.Debug('Engine.Initialize() - Canvas element provided.');
         Log.Trace('Engine.Initialize() - Getting 2D context from canvas...');
 
         const context = canvas.getContext('2d', {
@@ -63,44 +115,65 @@ export class Engine {
             );
         }
 
-        Log.Trace('Engine.Initialize() - 2D context obtained from canvas.');
-        Log.Trace('Engine.Initialize() - Initializing Renderer, UI, Input, and Network  ...');
+        Log.Debug('Engine.Initialize() - 2D context obtained from canvas.');
+        Log.Trace('Engine.Initialize() - Initializing Renderer, UI, Input, and Network ...');
 
         Renderer.Initialize(context);
         UI.Initialize();
         Input.Initialize();
         Network.Initialize();
 
-        Log.Info('Engine.Initialize() - Engine initialized successfully.');
+        Log.Trace('Engine.Initialize() - Initializing Application...');
+
+        application.Initialize();
+
+        this.initialized = true;
+
+        Log.Debug('Engine.Initialize() - Engine initialized successfully.');
+    }
+
+    public static Start(): void {
+        if (!this.initialized) {
+            throw new InvalidArgumentError(
+                'Engine must be initialized before starting. Please call Engine.Initialize() with a valid canvas context and application instance.',
+            );
+        }
+
+        this.running = true;
+        this.Run();
     }
 
     /**
      * Runs the engine and starts the game loop.
      *
-     * This method uses `requestAnimationFrame` to create a loop that calls the provided update function.
+     * This method uses `requestAnimationFrame` to create a loop that calls the `Update` and `Draw` methods of the `Application` instance.
      * It calculates the delta time for each frame and updates the `Time` class accordingly.
      *
-     * This is the main entry point for running the game logic and rendering.
-     * It should be called after the engine has been initialized and the canvas is ready.
+     * This is the main entry point for running the `Engine` logic and rendering.
+     * It should be called after the `Engine` has been initialized and the canvas is ready.
      *
      * @static
-     * @param {() => void} update - The update function to be called on each frame.
-     * @throws {InvalidArgumentError} If the update function is not provided or is not a function.
      * @memberof Engine
      */
-    public static Run(update: () => void): void {
-        if (!update || typeof update !== 'function') {
+    public static Run(): void {
+        this.CalculateDeltaTime();
+
+        if (!this.application) {
             throw new InvalidArgumentError(
-                'Update function must be provided and must be a function.',
+                'Application instance must be provided before running the Engine.',
             );
         }
 
-        this.CalculateDeltaTime();
-        update();
+        this.application.Update();
+        this.application.Draw();
 
         Input.Update();
 
-        this.intervalId = requestAnimationFrame(this.Run.bind(this, update));
+        if (this.running) {
+            this.animationFrameId = requestAnimationFrame(this.Run.bind(this));
+        } else {
+            cancelAnimationFrame(this.animationFrameId);
+        }
     }
 
     /**
@@ -112,14 +185,12 @@ export class Engine {
     public static Stop(): void {
         Log.Trace('Engine.Stop() - Stopping the game loop...');
 
-        if (!this.intervalId) {
+        if (!this.running) {
             Log.Warn('Engine.Stop() - No active game loop to stop.');
             return;
         }
 
-        cancelAnimationFrame(this.intervalId);
-        this.intervalId = 0;
-
+        this.running = false;
         Log.Trace('Engine.Stop() - Game loop stopped successfully.');
     }
 
@@ -132,7 +203,15 @@ export class Engine {
     public static Shutdown(): void {
         Log.Info('Engine.Shutdown() - Shutting down Engine...');
 
+        if (!this.initialized) {
+            Log.Warn('Engine.Shutdown() - Engine is not initialized. Shutdown is not required.');
+            return;
+        }
+
         this.Stop();
+
+        Log.Trace('Engine.Shutdown() - Shutting down Application...');
+        this.application.Shutdown();
 
         Log.Trace('Engine.Shutdown() - Shutting down Renderer, UI, Input, and Network...');
 
@@ -140,6 +219,8 @@ export class Engine {
         UI.Shutdown();
         Input.Shutdown();
         Network.Shutdown();
+
+        this.initialized = false;
 
         Log.Info('Engine.Shutdown() - Engine shut down successfully.');
     }
@@ -163,26 +244,6 @@ export class Engine {
         Time.UnscaledDeltaTime = -(Time.Time - now) / 1000;
         Time.DeltaTime = Time.UnscaledDeltaTime * Time.TimeScale;
         Time.Time = now;
-    }
-
-    /**
-     * Draws the background of the viewport with a specified color.
-     *
-     * This method fills the entire viewport with the given color.
-     * It is typically used to set a background color before drawing other elements.
-     *
-     * @static
-     * @param {Color} [color=Color.Black] - The color to fill the background with, default is black.
-     * @memberof Engine
-     */
-    public static DrawBackground(color: Color = Color.Black): void {
-        Renderer.Clear();
-
-        Renderer.FillRect(
-            Vector2.zero,
-            new Vector2(Renderer.GetWidth(), Renderer.GetHeight()),
-            color.String,
-        );
     }
 
     /**

@@ -1,5 +1,7 @@
-import { Input, MouseButton, KeyCode } from "./input/input";
+import { Input, MouseButton, KeyCode } from "../input/input";
 import { Renderer } from "./renderer";
+
+import { InvalidArgumentError } from "../../errors";
 
 /**
  * Handles viewport events such as resizing, mouse movements, and keyboard inputs.
@@ -19,10 +21,10 @@ export class Events {
      * This method is called when the window is resized and updates the `Renderer`'s viewport size.
      *
      * @static
-     * @param {Event} event - The resize event triggered by the window.
+     * @param {Event} [event] - The resize event (optional).
      * @memberof Events
      */
-    public static OnResize(event: Event): void {
+    public static OnResize(event?: Event): void {
         Renderer.Resize();
     }
 
@@ -33,9 +35,14 @@ export class Events {
      *
      * @static
      * @param {MouseEvent} event - The mouse move event containing the new mouse position.
+     * @throws {InvalidArgumentError} If the `MouseEvent` is not provided.
      * @memberof Events
      */
     public static OnMouseMove(event: MouseEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('MouseEvent must be provided.');
+        }
+
         Input.SetMousePosition(event.clientX, event.clientY);
     }
 
@@ -46,9 +53,14 @@ export class Events {
      *
      * @static
      * @param {KeyboardEvent} event - The key down event containing the pressed key code.
+     * @throws {InvalidArgumentError} If the `KeyboardEvent` is not provided.
      * @memberof Events
      */
     public static OnKeyDown(event: KeyboardEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('KeyboardEvent must be provided.');
+        }
+
         Input.SetKeyCode(event.keyCode as KeyCode);
     }
 
@@ -59,9 +71,14 @@ export class Events {
      *
      * @static
      * @param {KeyboardEvent} event - The key up event containing the released key code.
+     * @throws {InvalidArgumentError} If the `KeyboardEvent` is not provided.
      * @memberof Events
      */
     public static OnKeyUp(event: KeyboardEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('KeyboardEvent must be provided.');
+        }
+
         Input.UnsetKeyCode(event.keyCode as KeyCode);
     }
 
@@ -72,9 +89,14 @@ export class Events {
      *
      * @static
      * @param {MouseEvent} event - The mouse down event containing the pressed mouse button.
+     * @throws {InvalidArgumentError} If the `MouseEvent` is not provided.
      * @memberof Events
      */
     public static OnMouseDown(event: MouseEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('MouseEvent must be provided.');
+        }
+
         Input.SetMousePosition(event.clientX, event.clientY);
         Input.SetMouseButton(event.button as MouseButton);
     }
@@ -86,9 +108,14 @@ export class Events {
      *
      * @static
      * @param {MouseEvent} event - The mouse up event containing the released mouse button.
+     * @throws {InvalidArgumentError} If the `MouseEvent` is not provided.
      * @memberof Events
      */
     public static OnMouseUp(event: MouseEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('MouseEvent must be provided.');
+        }
+
         Input.SetMousePosition(event.clientX, event.clientY);
         Input.UnsetMouseButton(event.button as MouseButton);
     }
@@ -100,9 +127,14 @@ export class Events {
      *
      * @static
      * @param {WheelEvent} event - The mouse scroll event containing the scroll delta.
+     * @throws {InvalidArgumentError} If the `WheelEvent` is not provided.
      * @memberof Events
      */
     public static OnMouseScroll(event: WheelEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('WheelEvent must be provided.');
+        }
+
         const normalizedDelta: number = Math.sign(event.deltaY);
 
         if (normalizedDelta !== 0) {
@@ -117,9 +149,14 @@ export class Events {
      *
      * @static
      * @param {GamepadEvent} event - The gamepad connected event containing the connected gamepad.
+     * @throws {InvalidArgumentError} If the `GamepadEvent` is not provided.
      * @memberof Events
      */
     public static OnGamepadConnected(event: GamepadEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('GamepadEvent must be provided.');
+        }
+
         Input.AddGamepad(event.gamepad);
     }
 
@@ -130,9 +167,14 @@ export class Events {
      *
      * @static
      * @param {GamepadEvent} event - The gamepad disconnected event containing the disconnected gamepad.
+     * @throws {InvalidArgumentError} If the `GamepadEvent` is not provided.
      * @memberof Events
      */
     public static OnGamepadDisconnected(event: GamepadEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('GamepadEvent must be provided.');
+        }
+
         Input.RemoveGamepad(event.gamepad);
     }
 
@@ -141,9 +183,14 @@ export class Events {
      *
      * @static
      * @param {PointerEvent} event - The pointer down event to process.
+     * @throws {InvalidArgumentError} If the `PointerEvent` is not provided.
      * @memberof Events
      */
     public static OnPointerDown(event: PointerEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('PointerEvent must be provided.');
+        }
+
         Input.SetMousePosition(event.clientX, event.clientY);
         Input.OnPointerDown(event);
 
@@ -157,9 +204,14 @@ export class Events {
      *
      * @static
      * @param {PointerEvent} event - The pointer move event to process.
+     * @throws {InvalidArgumentError} If the `PointerEvent` is not provided.
      * @memberof Events
      */
     public static OnPointerMove(event: PointerEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('PointerEvent must be provided.');
+        }
+
         Input.SetMousePosition(event.clientX, event.clientY);
         Input.OnPointerMove(event);
     }
@@ -169,9 +221,14 @@ export class Events {
      *
      * @static
      * @param {PointerEvent} event - The pointer up event to process.
+     * @throws {InvalidArgumentError} If the `PointerEvent` is not provided.
      * @memberof Events
      */
     public static OnPointerUp(event: PointerEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('PointerEvent must be provided.');
+        }
+
         Input.SetMousePosition(event.clientX, event.clientY);
         Input.OnPointerUp(event);
 
@@ -185,9 +242,14 @@ export class Events {
      *
      * @static
      * @param {PointerEvent} event - The pointer cancel event to process.
+     * @throws {InvalidArgumentError} If the `PointerEvent` is not provided.
      * @memberof Events
      */
     public static OnPointerCancel(event: PointerEvent): void {
+        if (!event) {
+            throw new InvalidArgumentError('PointerEvent must be provided.');
+        }
+
         Input.SetMousePosition(event.clientX, event.clientY);
         Input.OnPointerCancel(event);
 
