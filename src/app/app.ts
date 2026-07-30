@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
-import { Viewport } from "./viewport/viewport";
+import { Component } from '@angular/core';
+import { ViewportComponent } from './components/viewport/viewport.component';
 
 @Component({
   selector: 'app-root',
-  imports: [Viewport],
+  imports: [ViewportComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

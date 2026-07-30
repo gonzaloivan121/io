@@ -1,16 +1,24 @@
-import { AfterViewInit, Component, ElementRef, Host, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    HostListener,
+    OnDestroy,
+    ViewChild,
+} from '@angular/core';
 
-import { Engine } from './core/engine';
-import { Events } from './core/events';
-import { Game } from './core/game';
+import { Engine } from '../../core/engine/engine';
+import { Events } from '../../core/engine/events';
+
+import { TestApplication } from '../../core/application/test.application';
+import { IOApplication } from '../../core/application/io.application';
 
 @Component({
     selector: 'app-viewport',
-    imports: [],
-    templateUrl: './viewport.html',
-    styleUrl: './viewport.css',
+    templateUrl: './viewport.component.html',
+    styleUrl: './viewport.component.css',
 })
-export class Viewport implements AfterViewInit, OnDestroy {
+export class ViewportComponent implements AfterViewInit, OnDestroy {
     @ViewChild('canvas', { static: false })
     private canvas!: ElementRef<HTMLCanvasElement>;
 
@@ -96,9 +104,7 @@ export class Viewport implements AfterViewInit, OnDestroy {
     }
 
     private Initialize(): void {
-        Engine.Initialize(this.canvas.nativeElement);
-
-        const game: Game = new Game();
-        game.Run();
+        Engine.Initialize(this.canvas.nativeElement, new IOApplication());
+        Engine.Start();
     }
 }
