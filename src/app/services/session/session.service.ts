@@ -1,19 +1,19 @@
-import { InvalidArgumentError } from "../errors";
+import { InvalidArgumentError } from "../../errors";
 
 /**
  * Represents a `Session` storage utility.
  *
  * @export
- * @class Session
+ * @class SessionService
  */
-export class Session {
+export class SessionService {
     /**
      * Returns the number of items stored in the `Session` storage.
      *
      * @readonly
      * @static
      * @type {number}
-     * @memberof Session
+     * @memberof SessionService
      */
     public static get length(): number {
         return localStorage.length;
@@ -26,7 +26,7 @@ export class Session {
      *
      * @static
      * @param {string} [key] - The `key` of the item to remove from the storage. If not provided, all items will be cleared.
-     * @memberof Session
+     * @memberof SessionService
      */
     public static Clear(key?: string): void {
         if (key && key.trim().length > 0) {
@@ -44,10 +44,10 @@ export class Session {
      * @param {string} key - The `key` of the item to retrieve from the storage.
      * @throws {InvalidArgumentError} If the provided `key` is `null` or empty.
      * @returns {(string | null)} The value associated with the specified `key`, or `null` if the `key` does not exist.
-     * @memberof Session
+     * @memberof SessionService
      */
     public static Get(key: string): string | null {
-        if (!key || key.trim().length === 0) {
+        if (!key || key.trim().length === 0 || key === null) {
             throw new InvalidArgumentError('Key cannot be null or empty.');
         }
 
@@ -62,10 +62,10 @@ export class Session {
      * @param {number} index - The `index` of the key to retrieve from the storage.
      * @throws {InvalidArgumentError} If the `index` is out of bounds.
      * @returns {(string | null)} The key at the specified `index`, or `null` if the `index` is out of bounds.
-     * @memberof Session
+     * @memberof SessionService
      */
     public static Key(index: number): string | null {
-        if (index < 0 || index >= this.length) {
+        if (index < 0 || index >= this.length || index === null) {
             throw new InvalidArgumentError('Index is out of bounds.');
         }
 
@@ -77,7 +77,7 @@ export class Session {
      *
      * @static
      * @returns {string[]} An array of all keys stored in the `Session` storage.
-     * @memberof Session
+     * @memberof SessionService
      */
     public static Keys(): string[] {
         const keys: string[] = [];
@@ -100,14 +100,14 @@ export class Session {
      * @param {string} key - The `key` of the item to store in the `Session` storage.
      * @param {string} value - The `value` of the item to store in the `Session` storage.
      * @throws {InvalidArgumentError} If the provided `key` or `value` is null or empty.
-     * @memberof Session
+     * @memberof SessionService
      */
     public static Set(key: string, value: string): void {
-        if (!key || key.trim().length === 0) {
+        if (!key || key.trim().length === 0 || key === null) {
             throw new InvalidArgumentError('Key cannot be null or empty.');
         }
 
-        if (!value || value.trim().length === 0) {
+        if (!value || value.trim().length === 0 || value === null) {
             throw new InvalidArgumentError('Value cannot be null or empty.');
         }
 
@@ -121,10 +121,10 @@ export class Session {
      * @param {string} key - The `key` to check for existence in the `Session` storage.
      * @throws {InvalidArgumentError} If the provided `key` is `null` or empty.
      * @returns {boolean} `true` if the `key` exists, `false` otherwise.
-     * @memberof Session
+     * @memberof SessionService
      */
     public static Exists(key: string): boolean {
-        if (!key || key.trim().length === 0) {
+        if (!key || key.trim().length === 0 || key === null) {
             throw new InvalidArgumentError('Key cannot be null or empty.');
         }
 
@@ -139,14 +139,14 @@ export class Session {
      * @param {string} value - The `value` to compare against the value associated with the `key` in the `Session` storage.
      * @throws {InvalidArgumentError} If the provided `key` or `value` is `null` or empty.
      * @returns {boolean} `true` if the value associated with the `key` matches the provided `value`, `false` otherwise.
-     * @memberof Session
+     * @memberof SessionService
      */
     public static Is(key: string, value: string): boolean {
-        if (!key || key.trim().length === 0) {
+        if (!key || key.trim().length === 0 || key === null) {
             throw new InvalidArgumentError('Key cannot be null or empty.');
         }
 
-        if (!value || value.trim().length === 0) {
+        if (!value || value.trim().length === 0 || value === null) {
             throw new InvalidArgumentError('Value cannot be null or empty.');
         }
 
