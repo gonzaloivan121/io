@@ -1,0 +1,34 @@
+import { Vector2 } from "@xloxlolex/vector-math";
+
+import { UITheme } from "../interfaces/ui-theme.interface";
+
+export const PulseTheme: UITheme = {
+    backdropBackground: 'rgba(8, 16, 10, 0.5)',
+    panelBackground: 'rgba(20, 33, 24, 0.95)',
+    panelBorder: 'rgba(52, 211, 153, 0.3)',
+    panelTitleColor: '#f0fdf4',
+    panelTextColor: '#d1fae5',
+    buttonBackgroundColor: '#1db954',
+    buttonHoverBackgroundColor: '#22c55e',
+    buttonPressedBackgroundColor: '#15803d',
+    buttonDisabledBackgroundColor: '#3f3f46',
+    buttonBorderColor: '#15803d',
+    buttonHoverBorderColor: '#16a34a',
+    buttonPressedBorderColor: '#14532d',
+    buttonDisabledBorderColor: '#27272a',
+    buttonTextColor: '#052e16',
+    buttonDisabledTextColor: '#a1a1aa',
+    accentColor: '#6ee7b7',
+    shadowColor: 'rgba(0, 0, 0, 0.4)',
+    panelRadius: 24,
+    buttonRadius: 999,
+    borderWidth: 0,
+    padding: new Vector2(18, 18),
+    titleFont: '700 18px Arial',
+    bodyFont: '14px Arial',
+    buttonFont: '700 14px Arial',
+    shadowBlur: 24,
+    shadowOffset: new Vector2(0, 10),
+    textAlign: 'left',
+    textBaseline: 'top',
+};

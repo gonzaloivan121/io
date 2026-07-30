@@ -1,0 +1,34 @@
+import { Vector2 } from "@xloxlolex/vector-math";
+
+import { UITheme } from "../interfaces/ui-theme.interface";
+
+export const RetroTheme: UITheme = {
+    backdropBackground: 'rgba(0, 45, 98, 0.2)',
+    panelBackground: 'rgba(236, 233, 216, 0.98)',
+    panelBorder: '#0a246a',
+    panelTitleColor: '#0f172a',
+    panelTextColor: '#1e293b',
+    buttonBackgroundColor: '#d4d0c8',
+    buttonHoverBackgroundColor: '#e7e5e4',
+    buttonPressedBackgroundColor: '#c4bfb4',
+    buttonDisabledBackgroundColor: '#d6d3d1',
+    buttonBorderColor: '#808080',
+    buttonHoverBorderColor: '#9ca3af',
+    buttonPressedBorderColor: '#525252',
+    buttonDisabledBorderColor: '#a8a29e',
+    buttonTextColor: '#0f172a',
+    buttonDisabledTextColor: '#78716c',
+    accentColor: '#2563eb',
+    shadowColor: 'rgba(15, 23, 42, 0.2)',
+    panelRadius: 6,
+    buttonRadius: 6,
+    borderWidth: 2,
+    padding: new Vector2(14, 14),
+    titleFont: '700 17px Tahoma',
+    bodyFont: '14px Tahoma',
+    buttonFont: '700 13px Tahoma',
+    shadowBlur: 10,
+    shadowOffset: new Vector2(2, 2),
+    textAlign: 'left',
+    textBaseline: 'top',
+};

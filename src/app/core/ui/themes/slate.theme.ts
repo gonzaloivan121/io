@@ -1,0 +1,34 @@
+import { Vector2 } from "@xloxlolex/vector-math";
+
+import { UITheme } from "../interfaces/ui-theme.interface";
+
+export const SlateTheme: UITheme = {
+    backdropBackground: 'rgba(10, 10, 12, 0.52)',
+    panelBackground: 'rgba(24, 24, 27, 0.96)',
+    panelBorder: 'rgba(82, 82, 91, 0.85)',
+    panelTitleColor: '#f4f4f5',
+    panelTextColor: '#d4d4d8',
+    buttonBackgroundColor: '#27272a',
+    buttonHoverBackgroundColor: '#3f3f46',
+    buttonPressedBackgroundColor: '#18181b',
+    buttonDisabledBackgroundColor: '#111113',
+    buttonTextColor: '#fafafa',
+    buttonDisabledTextColor: '#71717a',
+    buttonBorderColor: '#52525b',
+    buttonHoverBorderColor: '#737373',
+    buttonPressedBorderColor: '#404040',
+    buttonDisabledBorderColor: '#1f1f1f',
+    accentColor: '#a1a1aa',
+    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    panelRadius: 4,
+    buttonRadius: 4,
+    borderWidth: 1,
+    padding: new Vector2(16, 16),
+    titleFont: '600 18px Segoe UI',
+    bodyFont: '14px Segoe UI',
+    buttonFont: '600 14px Segoe UI',
+    shadowBlur: 8,
+    shadowOffset: new Vector2(0, 2),
+    textAlign: 'left',
+    textBaseline: 'middle',
+};
