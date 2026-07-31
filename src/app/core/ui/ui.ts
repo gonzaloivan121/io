@@ -22,6 +22,11 @@ import { UIThemes } from './themes';
 import { UIUtilities } from './ui-utilities';
 import { Log } from '../log/log';
 
+import {
+    AlreadyInitializedError,
+    NotInitializedError
+} from '../../errors';
+
 /**
  * Class representing the User Interface (UI) system.
  * 
@@ -29,6 +34,16 @@ import { Log } from '../log/log';
  * @class UI
  */
 export class UI {
+    /**
+     * Indicates whether the UI system has been initialized.
+     *
+     * @private
+     * @static
+     * @type {boolean}
+     * @memberof UI
+     */
+    private static initialized: boolean = false;
+
     /**
      * The current UI theme.
      *
@@ -50,35 +65,72 @@ export class UI {
     private static activeInputId: string | null = null;
 
     /**
-     * Initializes the UI system with an optional custom theme.
+     * Indicates whether the `UI` system has been initialized.
+     *
+     * @readonly
+     * @static
+     * @type {boolean}
+     * @memberof UI
+     */
+    public static get Initialized(): boolean {
+        return this.initialized;
+    }
+
+    /**
+     * Initializes the `UI` system with an optional custom theme.
      *
      * @static
      * @param {Partial<UITheme>} [theme] - An optional partial theme to customize the UI appearance.
+     * @throws {AlreadyInitializedError} If the `UI` system has already been initialized.
      * @memberof UI
      */
     public static Initialize(theme?: Partial<UITheme>): void {
         Log.Info('UI.Initialize() - Initializing UI...');
+        Log.Trace('UI.Initialize() - Checking if UI is already initialized...');
+
+        if (this.initialized) {
+            throw new AlreadyInitializedError(
+                'UI is already initialized. Please call UI.Shutdown() before initializing again.',
+            );
+        }
+
+        Log.Trace('UI.Initialize() - UI is not initialized. Proceeding with initialization...');
+        Log.Trace('UI.Initialize() - Setting current UI theme...');
 
         this.theme = {
             ...UIThemes.Slate,
             ...theme,
         };
+        Log.Trace('UI.Initialize() - Current UI theme set successfully.');
 
+        this.initialized = true;
         Log.Debug('UI.Initialize() - UI initialized successfully.');
     }
 
     /**
-     * Shuts down the UI system, clearing any active input state.
+     * Shuts down the `UI` system, clearing any active input state.
      *
      * @static
+     * @throws {NotInitializedError} If the `UI` system has not been initialized.
      * @memberof UI
      */
     public static Shutdown(): void {
         Log.Info('UI.Shutdown() - Shutting down UI...');
-        
-        this.activeInputId = null;
+        Log.Trace('UI.Shutdown() - Checking if UI is initialized...');
 
-        Log.Trace('UI.Shutdown() - UI shutdown complete.');
+        if (!this.initialized) {
+            throw new NotInitializedError(
+                'UI is not initialized. Please call UI.Initialize() before shutting down.',
+            );
+        }
+
+        Log.Trace('UI.Shutdown() - UI is initialized. Proceeding with shutdown...');
+
+        this.activeInputId = null;
+        Log.Trace('UI.Shutdown() - Cleared active input state.');
+
+        this.initialized = false;
+        Log.Debug('UI.Shutdown() - UI shutdown complete.');
     }
 
     /**
@@ -151,7 +203,8 @@ export class UI {
     public static Label(text: string, options: UILabel): void {
         UIUtilities.DrawScreenSpace(() => {
             Renderer.DrawText(text, UIUtilities.ResolvePosition(options.position, options.anchor), {
-                fillStyle: options.color ?? this.theme.panelTextColor,
+                fillStyle: options.fillStyle ?? this.theme.panelTextColor,
+                strokeStyle: options.strokeStyle,
                 font: options.font ?? this.theme.bodyFont,
                 textAlign: options.textAlign ?? this.theme.textAlign,
                 textBaseline: options.textBaseline ?? this.theme.textBaseline,
@@ -188,16 +241,21 @@ export class UI {
                 ? (options.hoverFillStyle ?? this.theme.buttonHoverBackgroundColor)
                 : (options.fillStyle ?? this.theme.buttonBackgroundColor);
 
-            const strokeStyle = !enabled
-                ? this.theme.buttonDisabledBorderColor
-                : pressed
-                    ? (options.pressedStrokeStyle ?? this.theme.buttonPressedBorderColor)
-                    : hovered
-                        ? (options.hoverStrokeStyle ?? this.theme.buttonHoverBorderColor)
-                        : (options.strokeStyle ?? this.theme.buttonBorderColor);
+        const strokeStyle = !enabled
+            ? this.theme.buttonDisabledBorderColor
+            : pressed
+              ? (options.pressedStrokeStyle ?? this.theme.buttonPressedBorderColor)
+              : hovered
+                ? (options.hoverStrokeStyle ?? this.theme.buttonHoverBorderColor)
+                : (options.strokeStyle ?? this.theme.buttonBorderColor);
 
         UIUtilities.DrawScreenSpace(() => {
-            Renderer.SetShadow(this.theme.shadowColor, this.theme.shadowBlur, this.theme.shadowOffset.x, this.theme.shadowOffset.y);
+            Renderer.SetShadow(
+                this.theme.shadowColor,
+                this.theme.shadowBlur,
+                this.theme.shadowOffset.x,
+                this.theme.shadowOffset.y,
+            );
             Renderer.DrawRoundedRect(
                 position,
                 size,
@@ -238,7 +296,11 @@ export class UI {
      * @param {UIPanel} options - An object containing the panel rendering options.
      * @memberof UI
      */
-    public static Panel(title: string, content: string | UIPanelContentItem[], options: UIPanel): void {
+    public static Panel(
+        title: string,
+        content: string | UIPanelContentItem[],
+        options: UIPanel,
+    ): void {
         const padding = options.padding ?? this.theme.padding;
         const radius = options.radius ?? this.theme.panelRadius;
         const lineGap = options.lineGap ?? 6;
@@ -256,7 +318,12 @@ export class UI {
         const deferredContentRenderers: Array<() => void> = [];
 
         UIUtilities.DrawScreenSpace(() => {
-            Renderer.SetShadow(this.theme.shadowColor, this.theme.shadowBlur, this.theme.shadowOffset.x, this.theme.shadowOffset.y);
+            Renderer.SetShadow(
+                this.theme.shadowColor,
+                this.theme.shadowBlur,
+                this.theme.shadowOffset.x,
+                this.theme.shadowOffset.y,
+            );
             Renderer.DrawRoundedRect(
                 position,
                 options.size,
@@ -428,7 +495,9 @@ export class UI {
             const topAlignedImageY =
                 baseline === 'middle'
                     ? cursorY + (lineHeight - run.size.y) * 0.5
-                    : baseline === 'bottom' || baseline === 'alphabetic' || baseline === 'ideographic'
+                    : baseline === 'bottom' ||
+                        baseline === 'alphabetic' ||
+                        baseline === 'ideographic'
                       ? cursorY + lineHeight - run.size.y
                       : cursorY;
 
@@ -494,38 +563,42 @@ export class UI {
             return;
         }
 
-        const ringFillStyle = options.ringFillStyle ?? (() => {
-            const gradient = Renderer.CreateRadialGradient(
-                metrics.center.x,
-                metrics.center.y,
-                metrics.outerRadius * 0.15,
-                metrics.center.x,
-                metrics.center.y,
-                metrics.outerRadius,
-            );
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        const ringFillStyle =
+            options.ringFillStyle ??
+            (() => {
+                const gradient = Renderer.CreateRadialGradient(
+                    metrics.center.x,
+                    metrics.center.y,
+                    metrics.outerRadius * 0.15,
+                    metrics.center.x,
+                    metrics.center.y,
+                    metrics.outerRadius,
+                );
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
-            return gradient;
-        })();
+                return gradient;
+            })();
         const thumbCenter = new Vector2(
             metrics.center.x + Input.GetVirtualJoystickThumbOffset(id).x,
             metrics.center.y + Input.GetVirtualJoystickThumbOffset(id).y,
         );
-        const thumbFillStyle = options.thumbFillStyle ?? (() => {
-            const gradient = Renderer.CreateRadialGradient(
-                thumbCenter.x - metrics.thumbRadius * 0.3,
-                thumbCenter.y - metrics.thumbRadius * 0.3,
-                metrics.thumbRadius * 0.2,
-                thumbCenter.x,
-                thumbCenter.y,
-                metrics.thumbRadius,
-            );
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
-            gradient.addColorStop(1, 'rgba(198, 198, 198, 0.92)');
+        const thumbFillStyle =
+            options.thumbFillStyle ??
+            (() => {
+                const gradient = Renderer.CreateRadialGradient(
+                    thumbCenter.x - metrics.thumbRadius * 0.3,
+                    thumbCenter.y - metrics.thumbRadius * 0.3,
+                    metrics.thumbRadius * 0.2,
+                    thumbCenter.x,
+                    thumbCenter.y,
+                    metrics.thumbRadius,
+                );
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+                gradient.addColorStop(1, 'rgba(198, 198, 198, 0.92)');
 
-            return gradient;
-        })();
+                return gradient;
+            })();
 
         UIUtilities.DrawScreenSpace(() => {
             Renderer.DrawEllipse(
@@ -541,7 +614,7 @@ export class UI {
                 options.shadowColor ?? this.theme.shadowColor,
                 options.shadowBlur ?? this.theme.shadowBlur,
                 options.shadowOffset?.x ?? this.theme.shadowOffset.x,
-                options.shadowOffset?.y ?? this.theme.shadowOffset.y
+                options.shadowOffset?.y ?? this.theme.shadowOffset.y,
             );
             Renderer.DrawEllipse(
                 thumbCenter,

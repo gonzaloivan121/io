@@ -21,21 +21,6 @@ export class Log {
     private static currentLevel: LogLevel = LogLevel.Trace;
 
     /**
-     * Initializes the logging system.
-     *
-     * @static
-     * @memberof Log
-     */
-    public static Initialize(): void {
-        this.Info('Log.Initialize() - Initializing Log...');
-
-        // Additional initialization logic can be added here if needed.
-        // this.SetLogLevel(LogLevel.Info);
-
-        this.Trace('Log.Initialize() - Log initialized successfully.');
-    }
-
-    /**
      * Sets the current log level for the logging system.
      *
      * @static

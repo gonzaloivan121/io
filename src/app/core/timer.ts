@@ -220,13 +220,13 @@ export class Timer {
         const position = this.Position;
         const font = `${this.FontSize}px Arial`;
         const textBaseline = this.TextBaseline;
-        const color = this.Color.String;
+        const fillStyle = this.Color.String;
 
         UI.Label(text, {
             position,
             font,
             textBaseline,
-            color,
+            fillStyle,
         });
     }
 

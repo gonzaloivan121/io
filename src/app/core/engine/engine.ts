@@ -8,18 +8,22 @@ import { Log } from '../log/log';
 import { Network } from '../network/network';
 import { UI } from '../ui/ui';
 
-import { InvalidArgumentError } from '../../errors';
+import {
+    AlreadyInitializedError,
+    InvalidArgumentError,
+    NotInitializedError
+} from '../../errors';
 
 /**
- * Represents the core engine of the application, responsible for managing the game loop, rendering, and timing.
- * It provides methods to initialize the engine, run the game loop, and handle rendering.
+ * Represents the core `Engine` of the application, responsible for managing the game loop, rendering, and timing.
+ * It provides methods to initialize the `Engine`, run the game loop, and handle rendering.
  *
  * @export
  * @class Engine
  */
 export class Engine {
     /**
-     * Indicates whether the engine has been initialized.
+     * Indicates whether the `Engine` has been initialized.
      *
      * @private
      * @static
@@ -29,7 +33,7 @@ export class Engine {
     private static initialized: boolean = false;
 
     /**
-     * Indicates whether the engine is currently running.
+     * Indicates whether the `Engine` is currently running.
      *
      * @private
      * @static
@@ -40,7 +44,7 @@ export class Engine {
 
     /**
      * The animation frame ID for the game loop.
-     * 
+     *
      * This is used to cancel the animation frame when stopping the game loop.
      *
      * @static
@@ -51,7 +55,7 @@ export class Engine {
 
     /**
      * The `Application` instance that the engine will run.
-     * 
+     *
      * This instance is responsible for the game logic, including initialization, updating, and drawing.
      *
      * @private
@@ -62,24 +66,42 @@ export class Engine {
     private static application: Application;
 
     /**
-     * Initializes the engine with the specified canvas element.
+     * Indicates whether the `Engine` has been initialized.
+     *
+     * @readonly
+     * @static
+     * @type {boolean}
+     * @memberof Engine
+     */
+    public static get Initialized(): boolean {
+        return this.initialized;
+    }
+
+    /**
+     * Initializes the `Engine` with the specified canvas element.
      * This method sets up the canvas and context for rendering.
      *
      * @static
      * @param {HTMLCanvasElement} canvas - The HTML canvas element to be used for rendering the viewport.
      * @param {Application} application - The `Application` instance to be run by the engine.
+     * @throws {AlreadyInitializedError} If the `Engine` has already been initialized.
      * @throws {InvalidArgumentError} If the application instance, the canvas element or the 2D context are not provided or are invalid.
      * @memberof Engine
      */
     public static Initialize(canvas: HTMLCanvasElement, application: Application): void {
+        Log.Info('Engine.Initialize() - Initializing Engine...');
+        Log.Trace('Engine.Initialize() - Checking if Engine is already initialized...');
+
         if (this.initialized) {
-            Log.Warn('Engine.Initialize() - Engine is already initialized. Re-initialization is not allowed.');
-            return;
+            throw new AlreadyInitializedError(
+                'Engine has already been initialized. Please call Engine.Shutdown() before re-initializing.',
+            );
         }
 
-        Log.Initialize();
+        Log.Trace(
+            'Engine.Initialize() - Engine is not initialized. Proceeding with initialization...',
+        );
 
-        Log.Info('Engine.Initialize() - Initializing Engine...');
         Log.Trace('Engine.Initialize() - Checking application instance...');
 
         if (!application) {
@@ -88,8 +110,8 @@ export class Engine {
             );
         }
 
-        Log.Debug('Engine.Initialize() - Application instance provided.');
-        
+        Log.Trace('Engine.Initialize() - Application instance provided.');
+
         this.application = application;
 
         Log.Trace('Engine.Initialize() - Checking canvas element...');
@@ -100,7 +122,7 @@ export class Engine {
             );
         }
 
-        Log.Debug('Engine.Initialize() - Canvas element provided.');
+        Log.Trace('Engine.Initialize() - Canvas element provided.');
         Log.Trace('Engine.Initialize() - Getting 2D context from canvas...');
 
         const context = canvas.getContext('2d', {
@@ -115,7 +137,7 @@ export class Engine {
             );
         }
 
-        Log.Debug('Engine.Initialize() - 2D context obtained from canvas.');
+        Log.Trace('Engine.Initialize() - 2D context obtained from canvas.');
         Log.Trace('Engine.Initialize() - Initializing Renderer, UI, Input, and Network ...');
 
         Renderer.Initialize(context);
@@ -126,15 +148,27 @@ export class Engine {
         Log.Trace('Engine.Initialize() - Initializing Application...');
 
         application.Initialize();
+        Log.Trace('Engine.Initialize() - Application initialized successfully.');
 
         this.initialized = true;
-
         Log.Debug('Engine.Initialize() - Engine initialized successfully.');
     }
 
+    /**
+     * Starts the `Engine` and begins the game loop.
+     *
+     * This is the main entry point for running the `Engine` logic and rendering.
+     * It should be called after the `Engine` has been initialized and the canvas is ready.
+     *
+     * @static
+     * @throws {NotInitializedError} If the `Engine` has not been initialized.
+     * @memberof Engine
+     */
     public static Start(): void {
+        Log.Info('Engine.Start() - Starting the Engine...');
+
         if (!this.initialized) {
-            throw new InvalidArgumentError(
+            throw new NotInitializedError(
                 'Engine must be initialized before starting. Please call Engine.Initialize() with a valid canvas context and application instance.',
             );
         }
@@ -144,18 +178,16 @@ export class Engine {
     }
 
     /**
-     * Runs the engine and starts the game loop.
+     * Runs the `Engine` and starts the game loop.
      *
      * This method uses `requestAnimationFrame` to create a loop that calls the `Update` and `Draw` methods of the `Application` instance.
      * It calculates the delta time for each frame and updates the `Time` class accordingly.
      *
-     * This is the main entry point for running the `Engine` logic and rendering.
-     * It should be called after the `Engine` has been initialized and the canvas is ready.
-     *
+     * @private
      * @static
      * @memberof Engine
      */
-    public static Run(): void {
+    private static Run(): void {
         this.CalculateDeltaTime();
 
         if (!this.application) {
@@ -195,18 +227,23 @@ export class Engine {
     }
 
     /**
-     * Shuts down the engine and cleans up resources.
+     * Shuts down the `Engine` and cleans up resources.
      *
      * @static
+     * @throws {NotInitializedError} If the `Engine` has not been initialized.
      * @memberof Engine
      */
     public static Shutdown(): void {
         Log.Info('Engine.Shutdown() - Shutting down Engine...');
+        Log.Trace('Engine.Shutdown() - Checking if Engine is initialized...');
 
         if (!this.initialized) {
-            Log.Warn('Engine.Shutdown() - Engine is not initialized. Shutdown is not required.');
-            return;
+            throw new NotInitializedError(
+                'Engine is not initialized. Please call Engine.Initialize() before shutting down.',
+            );
         }
+
+        Log.Trace('Engine.Shutdown() - Engine is initialized. Proceeding with shutdown...');
 
         this.Stop();
 
@@ -221,8 +258,7 @@ export class Engine {
         Network.Shutdown();
 
         this.initialized = false;
-
-        Log.Info('Engine.Shutdown() - Engine shut down successfully.');
+        Log.Debug('Engine.Shutdown() - Engine shut down successfully.');
     }
 
     /**
@@ -268,10 +304,10 @@ export class Engine {
 
     /**
      * Loads multiple images from an array of source URLs.
-     * 
+     *
      * This method iterates over the provided array of image source URLs,
      * loads each image using the `LoadImage` method, and returns an array of loaded images.
-     * 
+     *
      * The loaded images can then be used for drawing on the canvas or for other purposes in the application.
      *
      * @static

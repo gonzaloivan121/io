@@ -1,16 +1,16 @@
-import { Vector2 } from "@xloxlolex/vector-math";
+import { Vector2 } from '@xloxlolex/vector-math';
 
-import { MouseButton } from "./mouse-button";
-import { GamepadButton } from "./gamepad-button";
-import { GamepadAxis } from "./gamepad-axis";
-import { KeyCode } from "./key-code";
-import { Log } from "../log/log";
-import { Device } from "../engine/device";
-import { UIAnchor } from "../ui/types/ui-anchor.type";
-import { UIVirtualJoystick } from "../ui/interfaces/ui-virtual-joystick.interface";
+import { MouseButton } from './mouse-button';
+import { GamepadButton } from './gamepad-button';
+import { GamepadAxis } from './gamepad-axis';
+import { KeyCode } from './key-code';
+import { Log } from '../log/log';
+import { Device } from '../engine/device';
+import { UIAnchor } from '../ui/types/ui-anchor.type';
+import { UIVirtualJoystick } from '../ui/interfaces/ui-virtual-joystick.interface';
 
-import { InvalidArgumentError } from "../../errors";
-import { VirtualJoystickState } from "./interfaces/virtual-joystick-state.interface";
+import { AlreadyInitializedError, InvalidArgumentError, NotInitializedError } from '../../errors';
+import { VirtualJoystickState } from './interfaces/virtual-joystick-state.interface';
 
 /**
  * Represents the input system for handling keyboard and mouse inputs.
@@ -31,6 +31,16 @@ import { VirtualJoystickState } from "./interfaces/virtual-joystick-state.interf
  * and translating them into actions within the game or application.
  */
 export class Input {
+    /**
+     * Indicates whether the input system has been initialized.
+     *
+     * @private
+     * @static
+     * @type {boolean}
+     * @memberof Input
+     */
+    private static initialized: boolean = false;
+
     private static readonly virtualJoystickDesktopMargin: number = 24;
     private static readonly virtualJoystickMobileMargin: number = 16;
     private static readonly virtualJoystickDesktopOuterRadius: number = 72;
@@ -242,14 +252,39 @@ export class Input {
     }
 
     /**
-     * Initializes the input system.
+     * Indicates whether the `Input` system has been initialized.
+     *
+     * @readonly
+     * @static
+     * @type {boolean}
+     * @memberof Input
+     */
+    public static get Initialized(): boolean {
+        return this.initialized;
+    }
+
+    /**
+     * Initializes the `Input` system.
      *
      * @static
+     * @throws {AlreadyInitializedError} If the `Input` system has already been initialized.
      * @memberof Input
      */
     public static Initialize(): void {
         Log.Info('Input.Initialize() - Initializing Input...');
+        Log.Trace('Input.Initialize() - Checking if Input is already initialized...');
 
+        if (this.initialized) {
+            throw new AlreadyInitializedError(
+                'Input is already initialized. Please call Input.Shutdown() before initializing again.',
+            );
+        }
+
+        Log.Trace(
+            'Input.Initialize() - Input is not initialized. Proceeding with initialization...',
+        );
+
+        this.initialized = true;
         Log.Debug('Input.Initialize() - Input initialized successfully.');
     }
 
@@ -301,23 +336,26 @@ export class Input {
         const margin = compactLayout
             ? this.virtualJoystickMobileMargin
             : this.virtualJoystickDesktopMargin;
-        const outerRadius = options.outerRadius ?? (compactLayout
-            ? this.virtualJoystickMobileOuterRadius
-            : this.virtualJoystickDesktopOuterRadius);
-        const thumbRadius = options.thumbRadius ?? (compactLayout
-            ? this.virtualJoystickMobileThumbRadius
-            : this.virtualJoystickDesktopThumbRadius);
+        const outerRadius =
+            options.outerRadius ??
+            (compactLayout
+                ? this.virtualJoystickMobileOuterRadius
+                : this.virtualJoystickDesktopOuterRadius);
+        const thumbRadius =
+            options.thumbRadius ??
+            (compactLayout
+                ? this.virtualJoystickMobileThumbRadius
+                : this.virtualJoystickDesktopThumbRadius);
         const size = new Vector2(outerRadius * 2, outerRadius * 2);
         const position = this.ResolveAnchoredPosition(options.position, options.anchor, size);
 
         return {
-            center: new Vector2(
-                position.x + outerRadius,
-                position.y + outerRadius,
-            ),
+            center: new Vector2(position.x + outerRadius, position.y + outerRadius),
             outerRadius,
             thumbRadius,
-            maxThumbDistance: options.maxThumbDistance ?? Math.max(1, outerRadius * this.virtualJoystickDistanceFactor),
+            maxThumbDistance:
+                options.maxThumbDistance ??
+                Math.max(1, outerRadius * this.virtualJoystickDistanceFactor),
         };
     }
 
@@ -350,7 +388,10 @@ export class Input {
             return false;
         }
 
-        return Math.hypot(point.x - metrics.center.x, point.y - metrics.center.y) <= metrics.outerRadius;
+        return (
+            Math.hypot(point.x - metrics.center.x, point.y - metrics.center.y) <=
+            metrics.outerRadius
+        );
     }
 
     /**
@@ -425,13 +466,23 @@ export class Input {
     }
 
     /**
-     * Shuts down the input system and performs any necessary cleanup.
+     * Shuts down the `Input` system and performs any necessary cleanup.
      *
      * @static
+     * @throws {NotInitializedError} If the `Input` system has not been initialized.
      * @memberof Input
      */
     public static Shutdown(): void {
         Log.Info('Input.Shutdown() - Shutting down Input...');
+        Log.Trace('Input.Shutdown() - Checking if Input is initialized...');
+
+        if (!this.initialized) {
+            throw new NotInitializedError(
+                'Input is not initialized. Please call Input.Initialize() before shutting down.',
+            );
+        }
+
+        Log.Trace('Input.Shutdown() - Input is initialized. Proceeding with shutdown...');
 
         this.gamepads = [];
         this.currentGamepadAxes = {};
@@ -446,7 +497,8 @@ export class Input {
         this.virtualJoysticks = {};
         this.activeVirtualJoystickIdsByPointer = {};
 
-        Log.Trace('Input.Shutdown() - Input shut down successfully.');
+        this.initialized = false;
+        Log.Debug('Input.Shutdown() - Input shut down successfully.');
     }
 
     /**
@@ -493,9 +545,9 @@ export class Input {
 
     /**
      * Sets the state of a mouse button to pressed.
-     * 
+     *
      * This method updates the currentMouseButtons array to indicate that the specified mouse button is currently pressed.
-     * 
+     *
      * @static
      * @param {MouseButton} mouseButton - The mouse button to set as pressed.
      * @memberof Input
@@ -507,9 +559,9 @@ export class Input {
 
     /**
      * Unsets the state of a mouse button to not pressed.
-     * 
+     *
      * This method updates the currentMouseButtons array to indicate that the specified mouse button is no longer pressed.
-     * 
+     *
      * @static
      * @param {MouseButton} mouseButton - The mouse button to unset.
      * @memberof Input
@@ -606,8 +658,14 @@ export class Input {
 
         const gamepadIndex = joystick.options.gamepadIndex ?? 0;
 
-        this.ClearVirtualGamepadAxis(joystick.options.xAxis ?? GamepadAxis.LeftStickX, gamepadIndex);
-        this.ClearVirtualGamepadAxis(joystick.options.yAxis ?? GamepadAxis.LeftStickY, gamepadIndex);
+        this.ClearVirtualGamepadAxis(
+            joystick.options.xAxis ?? GamepadAxis.LeftStickX,
+            gamepadIndex,
+        );
+        this.ClearVirtualGamepadAxis(
+            joystick.options.yAxis ?? GamepadAxis.LeftStickY,
+            gamepadIndex,
+        );
     }
 
     /**

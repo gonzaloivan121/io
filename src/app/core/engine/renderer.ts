@@ -46,6 +46,14 @@ export interface TextOptions {
     fillStyle?: FillStyle;
 
     /**
+     * The stroke style to use for the text, which can be a color string, gradient, or pattern.
+     *
+     * @type {StrokeStyle}
+     * @memberof TextOptions
+     */
+    strokeStyle?: StrokeStyle;
+
+    /**
      * The font to use for the text, which should be a valid CSS font string (e.g., '16px Arial').
      *
      * @type {string}
@@ -179,12 +187,24 @@ export class Renderer {
     }
 
     /**
+     * Indicates whether the `Renderer` has been initialized.
+     *
+     * @readonly
+     * @static
+     * @type {boolean}
+     * @memberof Renderer
+     */
+    public static get Initialized(): boolean {
+        return this.initialized;
+    }
+
+    /**
      * Initializes the `Renderer` by setting the provided canvas rendering context and configuring default settings.
      *
      * @static
      * @param {CanvasRenderingContext2D} context - The canvas rendering context to use for all drawing operations.
-     * @throws {InvalidArgumentError} If the provided `context` is invalid.
      * @throws {AlreadyInitializedError} If the `Renderer` has already been initialized.
+     * @throws {InvalidArgumentError} If the provided `context` is invalid.
      * @memberof Renderer
      */
     static Initialize(context: CanvasRenderingContext2D): void {
@@ -197,7 +217,7 @@ export class Renderer {
             );
         }
 
-        Log.Debug(
+        Log.Trace(
             'Renderer.Initialize() - Renderer is not initialized. Proceeding with initialization...',
         );
         Log.Trace('Renderer.Initialize() - Checking canvas context...');
@@ -208,7 +228,7 @@ export class Renderer {
             );
         }
 
-        Log.Debug('Renderer.Initialize() - Canvas context provided.');
+        Log.Trace('Renderer.Initialize() - Canvas context provided.');
 
         this.context = context;
         Log.Trace('Renderer.Initialize() - Canvas context set for Renderer.');
@@ -222,7 +242,6 @@ export class Renderer {
         Log.Trace('Renderer.Initialize() - Renderer resized to match current window size.');
 
         this.initialized = true;
-
         Log.Debug('Renderer.Initialize() - Renderer initialized successfully.');
     }
 
@@ -253,7 +272,7 @@ export class Renderer {
         Log.Trace('Renderer.Shutdown() - Context save depth reset.');
 
         this.initialized = false;
-        Log.Trace('Renderer.Shutdown() - Renderer shut down successfully.');
+        Log.Debug('Renderer.Shutdown() - Renderer shut down successfully.');
     }
 
     /**
@@ -563,12 +582,12 @@ export class Renderer {
     }
 
     /**
-     * Draws text at the specified coordinates with the given options for fill style, font, text alignment, and text baseline.
+     * Draws text at the specified coordinates with the given options for fill style, font, text alignment, text baseline, and stroke style.
      *
      * @static
      * @param {string} text - The text to draw on the canvas.
      * @param {Vector2} position - The position at which to draw the text, interpreted according to the current `textAlign` and `textBaseline` settings.
-     * @param {TextOptions} [options] - Optional drawing options for the text, including fill style, font, text alignment, and text baseline. If not provided, default settings will be used.
+     * @param {TextOptions} [options] - Optional drawing options for the text, including fill style, font, text alignment, text baseline, and stroke style. If not provided, default settings will be used.
      * @memberof Renderer
      */
     static DrawText(text: string, position: Vector2, options?: TextOptions): void {
@@ -589,6 +608,11 @@ export class Renderer {
         }
 
         this.FillText(text, position);
+
+        if (options?.strokeStyle) {
+            this.SetStrokeStyle(options.strokeStyle);
+            this.StrokeText(text, position);
+        }
     }
 
     /**
@@ -1109,13 +1133,7 @@ export class Renderer {
         destinationPosition: Vector2,
         destinationSize: Vector2,
     ): void {
-        this.DrawImage(
-            image,
-            sourcePosition,
-            sourceSize,
-            destinationPosition,
-            destinationSize,
-        );
+        this.DrawImage(image, sourcePosition, sourceSize, destinationPosition, destinationSize);
     }
 
     /**
@@ -1270,6 +1288,18 @@ export class Renderer {
      */
     static FillText(text: string, position: Vector2): void {
         this.GetContext().fillText(text, position.x, position.y);
+    }
+
+    /**
+     * Adds a stroked text string to the canvas at the specified coordinates, using the current stroke style and font settings.
+     *
+     * @static
+     * @param {string} text - The text string to be drawn on the canvas.
+     * @param {Vector2} position - The position at which to begin drawing the text string on the canvas.
+     * @memberof Renderer
+     */
+    static StrokeText(text: string, position: Vector2): void {
+        this.GetContext().strokeText(text, position.x, position.y);
     }
 
     /**

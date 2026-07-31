@@ -1,6 +1,7 @@
 import { Vector2 } from "@xloxlolex/vector-math";
 
 import { UIAnchor } from "../types/ui-anchor.type";
+import { FillStyle, StrokeStyle } from "../../engine/renderer";
 
 /**
  * Interface defining the options for rendering a label in the `UI` system.
@@ -26,12 +27,20 @@ export interface UILabel {
     anchor?: UIAnchor;
 
     /**
-     * The text content of the label, which can be a string or a number.
+     * The fill style of the label, which can be a color string, a `CanvasGradient`, or a `CanvasPattern`.
      *
-     * @type {string}
+     * @type {FillStyle}
      * @memberof UILabel
      */
-    color?: string;
+    fillStyle?: FillStyle;
+    
+    /**
+     * The stroke style of the label, which can be a color string, a `CanvasGradient`, or a `CanvasPattern`.
+     *
+     * @type {StrokeStyle}
+     * @memberof UILabel
+     */
+    strokeStyle?: StrokeStyle;
 
     /**
      * The font style of the label, which can be a CSS font string.

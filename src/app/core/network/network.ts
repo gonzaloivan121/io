@@ -1,4 +1,5 @@
 import { NetworkSpecification } from './interfaces/network-specification.interface';
+
 import { Client } from './client';
 import { Server } from './server';
 import { UUID } from '../uuid';
@@ -12,16 +13,14 @@ import {
 } from '../../errors';
 
 /**
- * Represents the network management system, responsible for handling clients and servers within the application.
+ * Represents the `Network` management system, responsible for handling clients and servers within the application.
  *
  * @export
  * @class Network
  */
 export class Network {
     /**
-     * Indicates whether the network system has been initialized.
-     *
-     * This is a private static property that is set to true when the Network.Initialize() method is called.
+     * Indicates whether the `Network` system has been initialized.
      *
      * @private
      * @static
@@ -61,7 +60,7 @@ export class Network {
     private static readonly defaultClientEndpoint: string = 'local://default';
 
     /**
-     * Indicates whether the network system has been initialized.
+     * Indicates whether the `Network` system has been initialized.
      *
      * @readonly
      * @static
@@ -97,11 +96,11 @@ export class Network {
     }
 
     /**
-     * Initializes the network system with the specified options.
+     * Initializes the `Network` system with the specified options.
      *
      * @static
      * @param {NetworkSpecification} [options={}] - The options for initializing the network system, including whether to create default clients and servers.
-     * @throws {AlreadyInitializedError} If the network system has already been initialized.
+     * @throws {AlreadyInitializedError} If the `Network` system has already been initialized.
      * @throws {InvalidArgumentError} If any of the provided options are invalid.
      * @memberof Network
      */
@@ -134,14 +133,14 @@ export class Network {
         }
 
         this.initialized = true;
-
         Log.Debug('Network.Initialize() - Network initialized successfully.');
     }
 
     /**
-     * Shuts down the network system, clearing all registered clients and servers.
+     * Shuts down the `Network` system, clearing all registered clients and servers.
      *
      * @static
+     * @throws {NotInitializedError} If the `Network` system has not been initialized.
      * @memberof Network
      */
     public static Shutdown(): void {
@@ -154,13 +153,14 @@ export class Network {
             );
         }
 
+        Log.Trace('Network.Shutdown() - Network is initialized. Proceeding with shutdown...');
         Log.Trace('Network.Shutdown() - Clearing registered clients and servers...');
 
         this.clients.clear();
         this.servers.clear();
-        this.initialized = false;
 
-        Log.Trace('Network.Shutdown() - Network shut down successfully.');
+        this.initialized = false;
+        Log.Debug('Network.Shutdown() - Network shut down successfully.');
     }
 
     /**
