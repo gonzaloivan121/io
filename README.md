@@ -1,56 +1,63 @@
 # io
 
-`io` is a canvas rendering and game engine template for building browser-based `.io` style multiplayer experiences (for example, games inspired by Agar.io). It provides a reusable foundation for camera control, entity updates, world rendering, input handling, and UI layering so you can focus on game-specific mechanics.
+`io` is an experimental browser-based game-engine template for .io-style experiences built with Angular and a custom 2D canvas engine. The current version includes a viewport-driven game loop, entity simulation, camera follow, input handling, UI overlays, and a network layer scaffold for future multiplayer work.
 
-## Project Vision
+## What the project includes
 
-The goal of `io` is to serve as a practical starter engine for fast iteration on top-down, real-time action games in the browser. It is designed to be:
+The codebase now reflects a more complete prototype than a simple starter app:
 
-- Modular: core systems are split into focused engine files.
-- Extendable: new entities, rules, and rendering behaviors can be added without rewriting the base loop.
-- Input-flexible: keyboard/mouse and gamepad controls are supported.
-- Friendly to prototyping: ideal for experimenting with movement, collisions, camera behavior, and game feel.
+- A canvas-based viewport rendered through an Angular component.
+- A custom engine loop with renderer, timing, screen, cursor, and event utilities.
+- Core gameplay objects such as players, enemies, points, and a game map.
+- Camera and transform systems for world navigation and follow behavior.
+- Keyboard, mouse, gamepad, and touch-style input support.
+- Pause, restart, fullscreen, and in-game UI controls.
+- A network subsystem with client/server abstractions and payload types for future multiplayer integration.
 
-## Important Stability Note
+## Current project status
 
-This project is intentionally evolving and should be considered experimental.
+This project is intentionally experimental and should be considered a living prototype. The architecture, APIs, and file organization may change significantly in the near or far future as the engine evolves.
 
-It is expected to be subject to major changes in the near or far future, including architecture updates, API reshaping, file organization changes, and gameplay system refactors.
+## Architecture overview
 
-## Core Capabilities
+The project is organized around a modular engine structure:
 
-- Canvas-based render pipeline for 2D real-time gameplay.
-- Engine loop components for timing, updates, and draw passes.
-- Camera and viewport primitives for world-to-screen behavior.
-- Entity-driven model for players, enemies, and map elements.
-- Utility math and transform helpers for movement and spatial logic.
-- Input abstraction for multiple control methods.
-- Built-in gamepad support for analog and button-based interaction.
+- `src/app/components/viewport/viewport.component.ts` wires the canvas to the engine.
+- `src/app/core/application/io.application.ts` drives the gameplay loop and scene updates.
+- `src/app/core/engine/` contains the renderer, time, events, screen, cursor, and engine orchestration.
+- `src/app/core/input/` handles keyboard, mouse, gamepad, and virtual joystick input.
+- `src/app/core/network/` provides client/server scaffolding for future networked play.
+- `src/app/core/ui/` contains UI helpers and multiple visual themes.
 
-## Technology Stack
+## Gameplay and controls
 
-- Angular (application shell, structure, and development workflow)
-- TypeScript (engine and gameplay code)
-- HTML Canvas (render output)
-- Vitest (unit testing)
+The current application already supports:
 
-## High-Level Structure
+- Pause/resume through the UI and keyboard shortcuts.
+- Restarting the session from the pause state.
+- Fullscreen toggling.
+- Gamepad connection and button input handling.
+- Mobile-friendly virtual joystick behavior through the input layer.
 
-Key folders in `src/app/viewport/core/` include:
+Common controls in the current build include:
 
-- `engine/` and engine primitives for update/render orchestration
-- `application/` interfaces for app-level contracts
-- `input/` for keyboard, mouse, and gamepad definitions
-- `ui/` for in-canvas or engine-adjacent UI utilities
-- Entity and world modules such as player, enemy, map, camera, and renderer
+- `Esc` to pause or resume.
+- `R` to restart while paused.
+- `F` to toggle fullscreen.
+- Gamepad buttons and axes are handled by the engine input system.
 
-This separation allows gameplay systems to evolve independently while keeping the rendering and loop infrastructure reusable.
+## Technology stack
 
-## Getting Started
+- Angular 22 for the application shell and component structure.
+- TypeScript for the engine and gameplay systems.
+- HTML Canvas for real-time rendering.
+- Vitest for unit testing.
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js (current LTS recommended)
+- Node.js (LTS recommended)
 - npm
 
 ### Install dependencies
@@ -59,7 +66,7 @@ This separation allows gameplay systems to evolve independently while keeping th
 npm install
 ```
 
-### Start development server
+### Start the development server
 
 ```bash
 npm start
@@ -67,7 +74,7 @@ npm start
 
 Then open `http://localhost:4200/`.
 
-### Build for production
+### Build the project
 
 ```bash
 npm run build
@@ -79,22 +86,16 @@ npm run build
 npm test
 ```
 
-## Why Use This Template
+## Why this project exists
 
-Use `io` if you want to:
+`io` is intended as a reusable foundation for prototyping .io-style mechanics such as movement, growth, collisions, camera behavior, and interaction loops without starting from scratch each time.
 
-- Prototype an Agar.io-like experience quickly.
-- Build custom movement/combat/consumption mechanics on a clean base.
-- Experiment with camera scale, world bounds, and responsive controls.
-- Support gamepad input alongside desktop controls from the start.
+It is especially useful for experimenting with:
 
-## Current Scope
-
-`io` is currently positioned as an engine template and experimentation sandbox, not a finalized framework. You should expect to tailor systems to your game and potentially adjust to breaking changes as the project matures.
-
-## Contributing and Experimentation
-
-Contributions, experiments, and refactors are welcome. If you are extending core behavior, prefer small, isolated changes so systems can continue evolving without tightly coupling gameplay code to current internals.
+- Arcade-style survival gameplay.
+- Camera and viewport behavior.
+- Input abstraction across keyboard, mouse, and gamepad.
+- A future multiplayer architecture.
 
 ## License
 
