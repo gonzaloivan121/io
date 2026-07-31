@@ -10,7 +10,7 @@ import {
 import { Engine } from '../../core/engine/engine';
 import { Events } from '../../core/engine/events';
 
-import { TestApplication } from '../../core/application/test.application';
+import { WelcomeApplication } from '../../core/application/welcome.application';
 import { IOApplication } from '../../core/application/io.application';
 
 @Component({
