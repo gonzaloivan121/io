@@ -79,18 +79,19 @@ export class Point extends Entity {
     private timer: Timer = new Timer();
 
     /**
-     * Creates a new `Point` instance.
-     *
-     * @param {Vector2} position - The initial position of the `Point`.
-     * @param {number} rotation - The initial rotation of the `Point`.
-     * @param {Vector2} scale - The scale of the `Point`.
-     * @param {number} speed - The movement speed of the `Point`.
-     * @param {Color} color - The color of the `Point`.
+     * Creates an instance of `Point`.
+     * 
+     * @param {Vector2} [position=Vector2.zero] - The position of the `Point`.
+     * @param {number} [rotation=0] - The rotation of the `Point`.
+     * @param {Vector2} [scale=new Vector2(16, 16)] - The scale of the `Point`.
+     * @param {number} [speed=0] - The movement speed of the `Point`.
+     * @param {Color} [color=Color.White] - The color of the `Point`.
+     * @memberof Point
      */
     constructor(
         position: Vector2 = Vector2.zero,
         rotation: number = 0,
-        scale: Vector2 = Vector2.one,
+        scale: Vector2 = new Vector2(16, 16),
         speed: number = 0,
         color: Color = Color.White,
     ) {
@@ -122,9 +123,12 @@ export class Point extends Entity {
      */
     private ColorForValue(): Color {
         switch (this.value) {
-            case 1:     return Color.Bronze;
-            case 2:     return Color.Silver;
-            default:    return Color.Gold;
+            case 1:
+                return Color.Bronze;
+            case 2:
+                return Color.Silver;
+            default:
+                return Color.Gold;
         }
     }
 

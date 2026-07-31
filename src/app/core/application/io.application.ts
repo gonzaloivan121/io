@@ -52,7 +52,7 @@ export class IOApplication implements Application {
 
         for (const enemy of this.enemies) {
             enemy.Reset(this.GetRandomPosition());
-            enemy.color = this.CreateEnemyColor();
+            enemy.color = this.GetRandomColor();
         }
 
         for (const point of this.points) {
@@ -597,10 +597,8 @@ export class IOApplication implements Application {
         );
         const rotation: number = 0;
         const scale: Vector2 = new Vector2(64, 64);
-        const speed: number = 1;
-        const color: Color = Color.AppleGreen;
 
-        return new Player(position, rotation, scale, speed, color);
+        return new Player(position, rotation, scale);
     }
 
     private CreateEnemies(): Enemy[] {
@@ -619,7 +617,7 @@ export class IOApplication implements Application {
         const rotation: number = 0;
         const scale: Vector2 = new Vector2(64, 64);
         const speed: number = 1;
-        const color: Color = this.CreateEnemyColor();
+        const color: Color = this.GetRandomColor();
 
         return new Enemy(position, rotation, scale, speed, color);
     }
@@ -628,19 +626,16 @@ export class IOApplication implements Application {
         const position: Vector2 = new Vector2(Renderer.ViewportCenter.x, Renderer.ViewportCenter.y);
         const rotation: number = 0;
         const scale: Vector2 = new Vector2(1024 * 15, 1024 * 15);
-        const speed: number = 0;
-        const color: Color = Color.Gray;
 
-        return new Map(position, rotation, scale, speed, color);
+        return new Map(position, rotation, scale);
     }
 
     private CreateCamera(): Camera {
         const position: Vector2 = new Vector2(Renderer.ViewportCenter.x, Renderer.ViewportCenter.y);
         const rotation: number = 0;
         const scale: Vector2 = new Vector2(Renderer.ViewportSize.x, Renderer.ViewportSize.y);
-        const speed: number = 1;
 
-        return new Camera(position, rotation, scale, speed);
+        return new Camera(position, rotation, scale);
     }
 
     private CreatePoints(): Point[] {
@@ -656,12 +651,8 @@ export class IOApplication implements Application {
 
     private CreatePoint(): Point {
         const position: Vector2 = this.GetRandomPosition();
-        const rotation: number = 0;
-        const scale: Vector2 = new Vector2(16, 16);
-        const speed: number = 0;
-        const color: Color = Color.Cyan;
 
-        return new Point(position, rotation, scale, speed, color);
+        return new Point(position);
     }
 
     private GetRandomPosition(): Vector2 {
@@ -679,7 +670,7 @@ export class IOApplication implements Application {
         );
     }
 
-    private CreateEnemyColor(): Color {
+    private GetRandomColor(): Color {
         const palette: Color[] = Color.All;
 
         const index = Utilities.RandomInt(0, palette.length - 1);

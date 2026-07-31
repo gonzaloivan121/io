@@ -34,7 +34,7 @@ export class Player extends Entity {
      * @param {number} [rotation=0] - The initial rotation of the `Player` in degrees.
      * @param {Vector2} [scale=Vector2.one] - The initial scale (width and height) of the `Player`.
      * @param {number} [speed=1] - The speed at which the `Player` moves.
-     * @param {Color} [color=Color.White] - The color of the `Player`.
+     * @param {Color} [color=Color.AppleGreen] - The color of the `Player`.
      * @memberof Player
      */
     constructor(
@@ -42,7 +42,7 @@ export class Player extends Entity {
         rotation: number = 0,
         scale: Vector2 = Vector2.one,
         speed: number = 1,
-        color: Color = Color.White,
+        color: Color = Color.AppleGreen,
     ) {
         super(position, rotation, scale, speed, color);
         this.baseScale = new Vector2(scale.x, scale.y);
@@ -75,11 +75,6 @@ export class Player extends Entity {
         const moveSpeed: number = this.speed * 350;
         const delta: Vector2 = Vector2.Multiply(input, moveSpeed * Time.DeltaTime);
         this.transform.position = Vector2.Add(this.transform.position, delta);
-
-        // Test score increase when pressing the A button on the gamepad or the Space key on the keyboard.
-        if (Input.GetGamepadButton(GamepadButton.A) || Input.GetKey(KeyCode.Space)) {
-            this.score += 100;
-        }
 
         this.UpdateScale();
     }

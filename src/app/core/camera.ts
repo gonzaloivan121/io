@@ -56,14 +56,14 @@ export class Camera extends Entity {
      * @param {Vector2} [position=Vector2.zero] - The initial position of the `Camera` in world coordinates.
      * @param {number} [rotation=0] - The initial rotation of the `Camera` in degrees.
      * @param {Vector2} [scale=Vector2.one] - The initial scale (width and height) of the `Camera`'s viewport.
-     * @param {number} [speed=10] - The speed at which the `Camera` moves when following an entity.
+     * @param {number} [speed=1] - The speed at which the `Camera` moves when following an entity.
      * @memberof Camera
      */
     constructor(
         position: Vector2 = Vector2.zero,
         rotation: number = 0,
         scale: Vector2 = Vector2.one,
-        speed: number = 10,
+        speed: number = 1,
     ) {
         super(position, rotation, scale, speed);
     }
@@ -108,6 +108,7 @@ export class Camera extends Entity {
         Renderer.Save();
 
         Renderer.Translate(Renderer.ViewportCenter);
+        Renderer.Rotate(this.transform.rotation);
         Renderer.Scale(new Vector2(this.zoom, this.zoom));
         Renderer.Translate(Vector2.Multiply(this.transform.position, -1));
     }

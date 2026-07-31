@@ -41,7 +41,7 @@ export class Map extends Entity {
     constructor(
         position: Vector2 = Vector2.zero,
         rotation: number = 0,
-        scale: Vector2 = new Vector2(1024 * 10, 1024 * 10),
+        scale: Vector2 = Vector2.one,
         speed: number = 0,
         color: Color = Color.Gray,
     ) {
